@@ -157,23 +157,26 @@ Make_CPEP_Binary <- function(
 
 
 
-
-# url <- "https://www.dropbox.com/s/3tqfbty79i2hpdl/full.dataset.csv"
-url2 <- paste0(
-        "https://dl.dropboxusercontent.com/s/3tqfbty79i2hpdl/",
-        "full.dataset.csv?dl=1&token_hash=AAFLlKf9IpAFOq3iVC7DQIJdeApPuTZKcG6ls5ISMCOepg&expiry=1400518143"
-    )
+# Check if data have been loaded locally, otherwise load in from Dropbox
 
 
-# SHA-1 is : 
-# 47e1058314f00964e5780f2aad18d5d0c3c2e49d
-
-
-Data <- source_data(
-    url2,
-    sep=","
-    )
-
+if (exists("Data/Local_Data.Rdata")){
+    load("Data/Local_Data.RData")
+    } else {
+        url2 <- paste0(
+            "https://dl.dropboxusercontent.com/s/3tqfbty79i2hpdl/",
+            "full.dataset.csv?dl=1&token_hash=AAFLlKf9IpAFOq3iVC7DQIJdeApPuTZKcG6ls5ISMCOepg&expiry=1400518143"
+        )
+                
+        # SHA-1 is : 
+        # 47e1058314f00964e5780f2aad18d5d0c3c2e49d
+        
+        Data <- source_data(
+            url2,
+            sep=","
+        )
+        save(Data, file="Data/Local_Data.RData")   
+    }
 
 ##############################################################################################################
 
