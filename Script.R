@@ -4,6 +4,10 @@ rm(list=ls())
 ## PRE-REQUISITES
 # Packages
 require(repmis)
+require(igraph)
+require(plyr)
+require(statnet)
+require(foreign)
 
 # Source files
 
@@ -61,17 +65,86 @@ Make_CPEP_Graph <- function(
     return(output)
 }
 
+# Extract the part of the Data that is a sociomatrix
 
+Extract_SNA_Matrix <- function(
+    input, 
+    pcode_row.loc=2
+    ){
+    pcode_row <- as.character(input[,pcode_row.loc])
+    pcode_col <- colnames(Data)[,-c(1:pcode_row.loc)]
+    pcode_col <- strsplit(pcode_col, "[.]")
+    pcode_col <- sapply(
+            pcode_col, 
+            function(x) {
+                if (length(x)==3){
+                    paste(x[2], x[3], sep=" ")
+                } else {""}
+            }
+        )
+    pcode_col <- pcode_col[pcode_col!=""]
+    
+    if (!all(pcode_row==pcode_col)) stop("Postcodes on rows and columns are different.\nRecheck data")
+    
+    sna_cols.loc <- (pcode_row.loc+1):(pcode_row.loc + length(pcode_row))
+    output <- as.matrix(input[,sna_cols.loc])
+    rownames(output) <- colnames(output) <- pcode_row
+    return(output)
+}
+
+
+# There are covariate details for each postcode on the last few columns of the dataset data.
+# This function will produce another dataframe just containing this information
+
+Extract_Covariates <- function(
+    input,
+    postcode.loc=2,
+    cov.loc 
+    ){
+    postcodes <- input[,postcode.loc]
+    covariates <- input[,cov.loc]
+    output <- data.frame(postcode=postcodes, covariates)
+    return(output)
+}
+
+# Given the cpep matrix, this function will convert values into a binary indicator
 Make_CPEP_Binary <- function(
     input,
     cutoff=0.9
     ){
+    diag(input) <- 0 # If the diagonals were not 0, they will be now
     N.row <- dim(input)[1]
     N.col <- dim(input)[2]
-    output <- matrix(NA, N.row, N.col)
     
+    output <- matrix(0, N.row, N.col)
     
+    binary_locator <- which(
+        input >= cutoff,
+        arr.ind=T
+        )
+    
+    N <- nrow(binary_locator)
+    
+    for (i in 1:N){
+        output[
+            binary_locator[i,1], 
+            binary_locator[i,2]
+            ] <- 1 
+    }
+    return(output)   
 }
+
+
+
+
+
+
+# Data need to be tidied
+ 
+
+
+
+
 
 # Data 
 
@@ -86,7 +159,11 @@ Make_CPEP_Binary <- function(
 
 
 # url <- "https://www.dropbox.com/s/3tqfbty79i2hpdl/full.dataset.csv"
-url2 <- "https://dl.dropboxusercontent.com/s/3tqfbty79i2hpdl/full.dataset.csv?dl=1&token_hash=AAFLlKf9IpAFOq3iVC7DQIJdeApPuTZKcG6ls5ISMCOepg&expiry=1400518143"
+url2 <- paste0(
+        "https://dl.dropboxusercontent.com/s/3tqfbty79i2hpdl/",
+        "full.dataset.csv?dl=1&token_hash=AAFLlKf9IpAFOq3iVC7DQIJdeApPuTZKcG6ls5ISMCOepg&expiry=1400518143"
+    )
+
 
 # SHA-1 is : 
 # 47e1058314f00964e5780f2aad18d5d0c3c2e49d
@@ -110,49 +187,12 @@ Data <- source_data(
 #save.image("CPEP_SNA_Results/CPEPrawmatrix.RData")
 
 
-#As is standard with graphs, the diagonal is set to zero
-diag(cpep)<-rep(0, 10057)
-#save.image("CPEP_SNA_Results/CPEPgraph.RData")
-
-#Create a binary graph with 1's for cpep values greater than or equal to cutoff
-cutoff<-0.9
-binary9<-which(cpepgraph>=cutoff,arr.ind=T)
-
-cpepbinary<-matrix(0,10057,10057)
-for(i in 1:nrow(binary9))
-{
-    cpepbinary[binary9[i,1],binary9[i,2]]<-1
-}
-
-#rm(temp1)
-#rm(temp2)
-#rm(i)
-#rm(j)
-#rm(binary9)
-#save.image("CPEP_SNA_Results/CPEPbinarygraph.RData")
-
-cpep.pcode<-colnames(data)[-1]
-#cpep.pcode<-read.table("Non-public/Housing_Project/CPEPpostcodenames.txt")
-
-#Replace underscore in postcode names with space to make compatible with socioeconomic variables postcode names
-for(i in 1:10057)
-{
-    if(nchar(cpep.pcode[i])==7)
-    {
-        substr(cpep.pcode[i],4,4)<-" "
-    }else{
-        substr(cpep.pcode[i],3,3)<-" "
-    }
-}
-
-rownames(cpepbinary)<-colnames(cpepbinary)<-cpep.pcode
 
 #################################################################################
 #Look at temp4 and temp6 for creating graph to apply to get graph and SNA
 #################################################################################
 
 #load("Non-public/Housing_Project/CPEPigraph.RData")
-library(igraph)
 
 #########################
 #Religous/Race Variables
@@ -268,7 +308,7 @@ save.image("CPEP_SNA/CPEPmergedwithOther.RData")
 
 #full.dataset<-merge_all, 
 #Create a network attribute out of the graph and other variables
-library(statnet)
+
 
 load("Non-public/Housing_Project/CPEPergmRes.RData")
 #cpep.network<-network(cpepbinary.new,vertex.attr=Ext.var.list,vertex.attrnames=Ext.var.names,directed=F,matrix.type="adjacency")
