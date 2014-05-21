@@ -160,9 +160,13 @@ Make_CPEP_Binary <- function(
 # Check if data have been loaded locally, otherwise load in from Dropbox
 
 
-if (exists("Data/Local_Data.RData")){
+if (file.exists("Data/Local_Data.RData")){
+    print("Data already found. Will load now.")
     load("Data/Local_Data.RData")
+    
     } else {
+        print("Data not found locally. Fetching from dropbox")
+        
         url2 <- paste0(
             "https://dl.dropboxusercontent.com/s/3tqfbty79i2hpdl/",
             "full.dataset.csv?dl=1&token_hash=AAFLlKf9IpAFOq3iVC7DQIJdeApPuTZKcG6ls5ISMCOepg&expiry=1400518143"
@@ -183,7 +187,7 @@ if (exists("Data/Local_Data.RData")){
 # Code using functions above as 'black boxes'
 
 # To do: 
-#   1) Extract sociomatrix from data 
+#   1) Extract sociomatrix from data [DONE]
 #   2) Extract covariates only data frame [DONE]
 #   3) SNA of sociomatrix
 #   4) Summary states of covariates 
