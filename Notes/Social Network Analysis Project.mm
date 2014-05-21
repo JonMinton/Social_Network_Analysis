@@ -110,7 +110,7 @@
 </node>
 </node>
 </node>
-<node CREATED="1400677831350" ID="ID_756974536" LINK="../../../../C:/Users/jm383x/Downloads/Housing%20markets%20as%20social%20networks_v1u.pdf" MODIFIED="1400678027053" POSITION="right" TEXT="Current Manuscript"/>
+<node CREATED="1400677831350" ID="ID_756974536" LINK="https://www.dropbox.com/s/es443u7g6obvwko/Housing%20markets%20as%20social%20networks_v1u.pdf" MODIFIED="1400683405788" POSITION="right" TEXT="Current Manuscript"/>
 <node CREATED="1400678078174" ID="ID_1513783407" MODIFIED="1400678082138" POSITION="left" TEXT="Actions">
 <node CREATED="1400680484419" ID="ID_1923671736" MODIFIED="1400680485968" TEXT="To do"/>
 <node CREATED="1400680486483" ID="ID_551597307" MODIFIED="1400680487857" TEXT="Completed">
