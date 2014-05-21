@@ -16,22 +16,22 @@ require(foreign)
 
 #Extract CPEP values 
 Make_CPEP <- function(
-    data, 
+    input, 
     diagval = 1 # Should be 1 when output then passed to Make_CPEPGraph, 0 otherwise
     ){
     
-    N <- dim(data)[1]
+    N <- dim(input)[1]
     output <- matrix(NA, N, N)
     
     for (i in 1:(N-1)){
         for (j in (i + 1):N){
             
             output[i,j] <- lm(
-                    data[,(i+1)] ~ data[,(j+1)]
+                    input,(i+1)] ~ input[,(j+1)]
                 )$coef[2]
             
             output[j,i] <- lm(
-                    data[,(j+1)] ~ data[,(i+1)]
+                    input[,(j+1)] ~ input[,(i+1)]
                 )$coef[2]
         }
     }
@@ -72,7 +72,7 @@ Extract_SNA_Matrix <- function(
     pcode_row.loc=2
     ){
     pcode_row <- as.character(input[,pcode_row.loc])
-    pcode_col <- colnames(Data)[,-c(1:pcode_row.loc)]
+    pcode_col <- colnames(Data)[-c(1:pcode_row.loc)]
     pcode_col <- strsplit(pcode_col, "[.]")
     pcode_col <- sapply(
             pcode_col, 
@@ -160,7 +160,7 @@ Make_CPEP_Binary <- function(
 # Check if data have been loaded locally, otherwise load in from Dropbox
 
 
-if (exists("Data/Local_Data.Rdata")){
+if (exists("Data/Local_Data.RData")){
     load("Data/Local_Data.RData")
     } else {
         url2 <- paste0(
@@ -178,7 +178,29 @@ if (exists("Data/Local_Data.Rdata")){
         save(Data, file="Data/Local_Data.RData")   
     }
 
+## 
 ##############################################################################################################
+# Code using functions above as 'black boxes'
+
+# To do: 
+#   1) Extract sociomatrix from data 
+#   2) Extract covariates only data frame [DONE]
+#   3) SNA of sociomatrix
+#   4) Summary states of covariates 
+
+
+# The column numbers containing the covariates 
+varcols <- 3:(dim(Data)[2] - dim(Data)[1]) + dim(Data)[1]
+Data.covariates <- Extract_Covariates(
+    input=Data,
+    postcode.loc=2,
+    cov.loc = varcols
+    )
+rm(varcols)
+
+Data.sociomatrix <- Extract_SNA_Matrix(
+    Data
+    )
 
 
 
