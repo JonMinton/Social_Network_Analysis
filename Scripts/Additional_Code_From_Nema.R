@@ -3,6 +3,20 @@
 
 # Nema's code below:
 
+# Data need to be tidied
+
+
+
+
+
+
+# Data 
+
+# Data Promised: 
+
+# House price time series data: 
+#Read in the data with house price times series values for quarterly time points from 2000 to 2007 (8 years total)
+# data<-read.csv("postcode_inflation_17jan08.csv",header=T)
 
 # setwd("/Volumes/nd29c/Non-public/Housing_Project")
 
