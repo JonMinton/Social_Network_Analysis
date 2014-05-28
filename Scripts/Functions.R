@@ -11,7 +11,7 @@ Make_CPEP <- function(
         for (j in (i + 1):N){
             
             output[i,j] <- lm(
-                input,(i+1)] ~ input[,(j+1)]
+                input[,(i+1)] ~ input[,(j+1)]
             )$coef[2]
 
 output[j,i] <- lm(
@@ -73,6 +73,7 @@ Extract_SNA_Matrix <- function(
     sna_cols.loc <- (pcode_row.loc+1):(pcode_row.loc + length(pcode_row))
     output <- as.matrix(input[,sna_cols.loc])
     rownames(output) <- colnames(output) <- pcode_row
+    output <- as.sociomatrix(output)
     return(output)
 }
 
