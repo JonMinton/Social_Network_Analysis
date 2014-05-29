@@ -11,6 +11,29 @@
   <body>
     <span style="letter-spacing: normal; font-size: x-small; text-transform: none; white-space: normal; display: inline !important; text-align: start; font-weight: normal; font-variant: normal; background-color: rgb(255, 255, 255); text-indent: 0px; line-height: normal; word-spacing: 0px; float: none; font-family: Tahoma; font-style: normal; color: rgb(0, 0, 0)"><font color="rgb(0, 0, 0)" size="x-small" face="Tahoma">thanks Jon. One thought came to mind following our meeting on Monday. If we think it's a bit dubious running the ERG model on separate parts of the city, how about we run it on multiple random sub-samples of 100 observations? A sort of bootstrapping approach... Best, g.</font></span>
   </body>
+</html></richcontent>
+</node>
+</node>
+<node CREATED="1401396445458" ID="ID_194326425" MODIFIED="1401396449623" TEXT="Email from Nema">
+<node CREATED="1401396450245" ID="ID_805274076" MODIFIED="1401396471941">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      
+    </p>
+    <div style="font-size: 13px; color: rgb(34, 34, 34); font-family: arial, sans-serif; line-height: normal; text-align: start; word-spacing: 0px; font-variant: normal; font-style: normal; white-space: normal; background-color: rgb(255, 255, 255); text-transform: none; text-indent: 0px; font-weight: normal; letter-spacing: normal">
+      &#160;I've attached 2 more scripts for analysis (simple summaries in Code 3 and some basic ergm models (only really suitable for smaller networks) in Code 2). I can't attach any RData files with an email (they're too big) but if you use the full.dataset (I think I might call it full.datast in the code) that I gave you before (and avoid the load commands) you should be able to run all of them. igraph has a lot of good basic graph summaries (I didn't use all of them here). I will send a version of the VBPLCM code I am using once I'm sure that it is bug-free!
+    </div>
+    <div style="font-size: 13px; color: rgb(34, 34, 34); font-family: arial, sans-serif; line-height: normal; text-align: start; word-spacing: 0px; font-variant: normal; font-style: normal; white-space: normal; background-color: rgb(255, 255, 255); text-transform: none; text-indent: 0px; font-weight: normal; letter-spacing: normal">
+      Best,
+    </div>
+    <div style="font-size: 13px; color: rgb(34, 34, 34); font-family: arial, sans-serif; line-height: normal; text-align: start; word-spacing: 0px; font-variant: normal; font-style: normal; white-space: normal; background-color: rgb(255, 255, 255); text-transform: none; text-indent: 0px; font-weight: normal; letter-spacing: normal">
+      &#160;Nema.
+    </div>
+  </body>
 </html>
 </richcontent>
 </node>
@@ -79,8 +102,7 @@
       <span style="font-size: 11pt; font-family: Calibri, sans-serif; color: rgb(31, 73, 125)"><font color="rgb(31, 73, 125)" size="11pt" face="Calibri, sans-serif">This will give us the rest of June to revise and update the paper. What do you think? The attached may be of some use in terms of providing an example of similar analysis based on house price movements.</font></span>
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
 </node>
 <node CREATED="1400677622883" ID="ID_1880801428" MODIFIED="1400677624391" POSITION="right" TEXT="Commitments"/>
