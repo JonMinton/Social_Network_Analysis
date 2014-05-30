@@ -64,33 +64,45 @@ node.centrality.sc<-centralization.betweenness(cpep.igraph, directed=F)
 #Homophily
 #####################
 
-Attributes.names <- colnames(Data.V)[-1]
-
-Homophily_Measures <- vector("numeric", length(Attributes.names))
-names(Homophily_Measures) <- Attributes.names
-
-for (i in Attributes.names){
-    Homophily_Measures[i] <- assortativity(
-        graph=cpep.igraph,
-        types1=Data.V[,i],
-        directed=F
+if (!file.exists("Data/RObj/Homophily.RData")){
+    print("Cannot find homophily calculations. Making and saving")
+    Attributes.names <- colnames(Data.V)[-1]
+    
+    Homophily_Measures <- vector("numeric", length(Attributes.names))
+    names(Homophily_Measures) <- Attributes.names
+    
+    for (i in Attributes.names){
+        Homophily_Measures[i] <- assortativity(
+            graph=cpep.igraph,
+            types1=Data.V[,i],
+            directed=F
         )
+    }
+    save(Homophily_Measures, Attributes.names, file="Data/RObj/Homophily.RData")    
+    
+} else {
+    print("Found homophily calculations. Loading")
+    load("Data/RObj/Homophily/RData")
+    
 }
 
-cpep.network <- network(
-#    x= cpepbinary.new,
-    #x=cpep.igraph,
-    x=Data.E,
-#    vertex.attr=Ext.var.list,
-#    vertex.attr=Data.V[,-1],
-    
-#    vertex.attrnames=Ext.Var.names,
-#    vertex.attrnames=Attributes.names,
-    
-    directed=F,
-    
-    matrix.type="adj"
+if (!file.exists("Data/RObj/Network.RData")){
+    print("Cannot find Network file. Creating and Saving")
+    cpep.network <- network(
+        x=Data.E,
+        vertex.attr=Data.V[,-1],        
+        vertex.attrnames=Attributes.names,
+        
+        directed=F,
+        
+        matrix.type="adj"
     )
+    
+} else {
+    print("Found network file. Loading")
+    
+}
+
 
 
 
