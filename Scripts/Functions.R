@@ -49,7 +49,36 @@ Make_CPEP_Graph <- function(
     return(output)
 }
 
-# Extract the part of the Data that is a sociomatrix
+
+Show_NA_Row_Index <- function(Df){
+    # Thanks to :
+    # http://faculty.nps.edu/sebuttre/home/R/missings.html
+    
+    output <- unique(
+        unlist(
+            lapply(
+                Df,
+                function(x) which(is.na(x))
+                )
+            )
+        )
+    return(output)
+    
+}
+
+# Remove postcodes associated with rows where the attribute details are missing
+
+Remove_Incomplete_Postcodes <- function(
+    input,
+    incompletes,
+    pcode_row.loc=2
+    ){
+    output <- input[
+        setdiff(1:dim(input)[1], incompletes),
+        setdiff(1:dim(input)[2], pcode_row.loc + incompletes)
+        ]
+    return(output)
+}
 
 Extract_SNA_Matrix <- function(
     input, 

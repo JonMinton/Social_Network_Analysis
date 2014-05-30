@@ -33,6 +33,16 @@ if (!file.exists("Data/RObj/Data.RData")){
     print("Loading Data from CSV")
     
     Data <- read.csv("Data/Raw/Full_Dataset.csv")
+        
+    
+    if (Complete_Only){
+        browser()
+        print("Removing incomplete observations")
+        na_indices <- Show_NA_Row_Index(Data)
+        
+        Data <- Remove_Incomplete_Postcodes(Data, na_indices)
+    }
+    
 } else {
     print("Data found as R Objects. Loading workspace")
     
@@ -41,9 +51,9 @@ if (!file.exists("Data/RObj/Data.RData")){
 }
 
 print("Seeing whether data have been unpacked into Edges and Vertices")
-if (!exists(Data.V) | !exists(Data.E)){
+if (!exists("Data.V") | !exists("Data.E")){
     
-    if (!exists(Data.V)){
+    if (!exists("Data.V")){
         print("Vertex covariate data not found. Unpacking from Data now")
         # The column numbers containing the covariates 
         varcols <- 3:(dim(Data)[2] - dim(Data)[1]) + dim(Data)[1]
@@ -55,17 +65,18 @@ if (!exists(Data.V) | !exists(Data.E)){
         rm(varcols)
         
     } 
-    if (!exists(Data.E)){
+    if (!exists("Data.E")){
         print("Edge (Sociomatrix) data not found. Unpackaging from Data now")
         
-        Data.sociomatrix <- Extract_SNA_Matrix(
+        Data.E <- Extract_SNA_Matrix(
             Data
         )
     }
     print("Saving unpacked data as Data.RData")
     # Saving Unpacked Data as Data.RData
+    dir.create("Data/RObj", recursive=T, showWarning=F)
     save(Data, Data.E, Data.V,
-         file="Data/Robj/Data.RData"
+         file="Data/RObj/Data.RData"
          )
 } else {
     print("All data appear to have been loaded already.")

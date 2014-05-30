@@ -1,8 +1,6 @@
 rm(list=ls())
 
 
-
-
 ## PRE-REQUISITES
 # Packages
 require(repmis)
@@ -23,7 +21,6 @@ source("Scripts/Functions.R")
 source("Scripts/Load_and_Prepare_Data.R")
 
 
-
 ## 
 ##############################################################################################################
 # Code using functions above as 'black boxes'
@@ -33,11 +30,6 @@ source("Scripts/Load_and_Prepare_Data.R")
 #   2) Extract covariates only data frame [DONE]
 #   3) SNA of sociomatrix
 #   4) Summary states of covariates 
-
-
-
-
-
 
 
 
