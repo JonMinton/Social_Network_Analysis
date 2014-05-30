@@ -48,16 +48,34 @@ if(!file.exists("Data/RObj/Adj_iGraph.RData")){
     
 }
 
-#Calculate some summary graph measures: how many connected components, graph density and node closeness
-gr.no.comps<-no.clusters(cpep.igraph)
-gr.density<-graph.density(cpep.igraph)
-#node.closeness<-closeness(cpep.igraph)
-#mean(node.closeness)
-#node.betweenness<-betweenness(cpep.igraph,directed=F)
-#summary(node.betweenness)
-graph.transitivity<-transitivity(cpep.igraph,"globalundirected")
-node.centrality.sc<-centralization.betweenness(cpep.igraph, directed=F)
-#node.centrality.sc$centralization
+if(!file.exists("Data/RObj/Graph_Summaries.RData")){
+    print("Graph summaries file not found. Creating and saving")
+    #Calculate some summary graph measures: how many connected components, graph density and node closeness
+    gr.no.comps<-no.clusters(cpep.igraph)
+    gr.density<-graph.density(cpep.igraph)
+    #node.closeness<-closeness(cpep.igraph)
+    #mean(node.closeness)
+    #node.betweenness<-betweenness(cpep.igraph,directed=F)
+    #summary(node.betweenness)
+    graph.transitivity<-transitivity(cpep.igraph,"globalundirected")
+    node.centrality.sc<-centralization.betweenness(cpep.igraph, directed=F)
+    #node.centrality.sc$centralization
+    
+    save(
+        gr.no.comps, 
+        gr.density,
+        graph.transitivity,
+        node.centrality.sc,
+        
+        file="Data/RObj/Graph_Summaries.RData"
+        )
+    
+} else {
+    print("Found graph summaries file so reloading")
+    load("Data/RObj/Graph_Summaries.RData")
+}
+
+
 
 
 ######################
@@ -97,22 +115,22 @@ if (!file.exists("Data/RObj/Network.RData")){
         
         matrix.type="adj"
     )
-    
+    save(cpep.network, file="Data/RObj/Network.RData")
 } else {
     print("Found network file. Loading")
-    
+    load("Data/RObj/Network.RData")
 }
 
 
 
 
-#Create network object
-save.image("CPEPnetworkobject.RData")
-#cpep.network<-network(cpepbinary.new,vertex.attr=Ext.var.list,vertex.attrnames=Ext.var.names,directed=F,matrix.type="adjacency")
-model1<-ergm(cpep.network~edges+triangle)
-save.image("CPEP_SNA/CPEPergmRes.RData")
-
-model2<-ergm(cpep.network~edges+triangle+absdiff("flats")+absdiff("dombed"))
+# #Create network object
+# save.image("CPEPnetworkobject.RData")
+# #cpep.network<-network(cpepbinary.new,vertex.attr=Ext.var.list,vertex.attrnames=Ext.var.names,directed=F,matrix.type="adjacency")
+# model1<-ergm(cpep.network~edges+triangle)
+# save.image("CPEP_SNA/CPEPergmRes.RData")
+# 
+# model2<-ergm(cpep.network~edges+triangle+absdiff("flats")+absdiff("dombed"))
 
 
 
