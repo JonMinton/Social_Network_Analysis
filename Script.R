@@ -111,3 +111,18 @@ Data_Long <- reshape::melt(
         )
     )
 
+
+# Visualisation
+
+
+d <- ggplot(
+    Data_Long,
+    aes(
+        x=value
+        )
+    )
+d2 <- d + geom_density(fill="black", colour="black") + facet_grid(year ~variable)
+d2 + xlim(-0.1, 0.1) + ylim(0, 50)
+
+
+
