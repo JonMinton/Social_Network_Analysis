@@ -82,3 +82,38 @@ if (!exists("Data.V") | !exists("Data.E")){
     print("All data appear to have been loaded already.")
 }
 
+
+# Pathos Data from Gwilym
+
+if (!file.exists("Data/RObj/Pathos_Data.RData")){
+    print("Pathos Data not found as R object. Searching for CSV file locally")
+    
+    if (!file.exists("Data/Raw/Pathos_Data.csv")){
+        url <- "https://www.dropbox.com/s/cad37rmu1a3kvxa/average%20pathos_2000to2002__and__2010to2012.csv"
+        print("Cannot find dataset. Downloading.")
+        dir.create("Data/Raw/", recursive=T, showWarnings=F)
+        tmp <- httr::GET(url,
+                         verbose()
+        )
+        writeBin(
+            content(tmp, "raw"),
+            "Data/Raw/Pathos_Data.csv"
+        )
+    } else {
+        print("Found Dataset as CSV locally, so not downloading again.")
+    }
+    
+    
+    # Read the file into an R object format
+    print("Loading Data from CSV")
+    
+    Pathos_Data <- read.csv("Data/Raw/Pathos_Data.csv")
+    
+    
+} else {
+    print("Data found as R Objects. Loading workspace")
+    
+    load("Data/RObj/Pathos_Data.RData")
+    
+}
+
