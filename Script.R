@@ -11,86 +11,103 @@ require(foreign)
 require(RCurl)
 require(httr)
 require(igraph)
+require(reshape)
+require(ggplot2)
 
 # Global variables
 
 Complete_Only <- T # Should only complete data be used? 
-
+Network_Analysis <- F
+Pathos_Analysis <- T
 # Source files
 
 source("Scripts/Functions.R")
 
 source("Scripts/Load_and_Prepare_Data.R")
 
-source("Scripts/Create_Networks.R")
-
-
-
-
-## 
-##############################################################################################################
-# Code using functions above as 'black boxes'
-
-#   3) SNA of sociomatrix
-#   4) Summary states of covariates 
-
-
-
-if(!file.exists("Data/RObj/Graph_Summaries.RData")){
-    print("Graph summaries file not found. Creating and saving")
-    #Calculate some summary graph measures: how many connected components, graph density and node closeness
-    gr.no.comps<-no.clusters(cpep.igraph)
-    gr.density<-graph.density(cpep.igraph)
-    #node.closeness<-closeness(cpep.igraph)
-    #mean(node.closeness)
-    #node.betweenness<-betweenness(cpep.igraph,directed=F)
-    #summary(node.betweenness)
-    graph.transitivity<-transitivity(cpep.igraph,"globalundirected")
-    node.centrality.sc<-centralization.betweenness(cpep.igraph, directed=F)
-    #node.centrality.sc$centralization
-    
-    save(
-        gr.no.comps, 
-        gr.density,
-        graph.transitivity,
-        node.centrality.sc,
-        
-        file="Data/RObj/Graph_Summaries.RData"
-        )
-    
-} else {
-    print("Found graph summaries file so reloading")
-    load("Data/RObj/Graph_Summaries.RData")
+if (Network_Analysis){
+    source("Scripts/Create_Networks.R")
+    source("Scripts/Analyse_Networks.R")
 }
 
 
 
 
-######################
-#Homophily
-#####################
-
-if (!file.exists("Data/RObj/Homophily.RData")){
-    print("Cannot find homophily calculations. Making and saving")
-    Attributes.names <- colnames(Data.V)[-1]
+if (Pathos_Analysis){
     
-    Homophily_Measures <- vector("numeric", length(Attributes.names))
-    names(Homophily_Measures) <- Attributes.names
+# Do stuff here    
     
-    for (i in Attributes.names){
-        Homophily_Measures[i] <- assortativity(
-            graph=cpep.igraph,
-            types1=Data.V[,i],
-            directed=F
-        )
-    }
-    save(Homophily_Measures, Attributes.names, file="Data/RObj/Homophily.RData")    
     
-} else {
-    print("Found homophily calculations. Loading")
-    load("Data/RObj/Homophily/RData")
     
 }
 
 
+
+######################################################################################################################
+######################################################################################################################
+
+attach(Pathos_Data)
+
+
+d_Type_I    <- Type_I_p_all_CY2011      -   Type_I_p_all_CY2001
+d_Type_II   <- Type_II_p_all_CY2011     -   Type_II_p_all_CY2001
+d_Type_III  <- Type_III_p_all_CY2011    -   Type_III_p_all_CY2001
+d_Type_IV   <- Type_IV_p_all_CY2011     -   Type_IV_p_all_CY2001
+d_Type_All  <- Type_All_p_all_CY2011    -   Type_All_p_all_CY2001
+d_Type_Core <- Type_CORE_p_all_CY2011   -   Type_CORE_p_all_CY2001
+
+Data_Change <- data.frame(
+    intermed=intermed,
+    year="dif",
+    I=d_Type_I,
+    II=d_Type_II,
+    III=d_Type_III,
+    IV=d_Type_IV,
+    All=d_Type_All,
+    Core=d_Type_Core
+    )
+
+Data_2001 <- data.frame(
+    intermed=intermed,
+    year="2001",
+    I=Type_I_p_all_CY2001,
+    II=Type_II_p_all_CY2001,
+    III=Type_III_p_all_CY2001,
+    IV=Type_IV_p_all_CY2001,
+    All=Type_All_p_all_CY2001,
+    Core=Type_CORE_p_all_CY2001
+    )
+
+Data_2011 <- data.frame(
+    intermed=intermed,
+    year="2011",
+    I=Type_I_p_all_CY2011,
+    II=Type_II_p_all_CY2011,
+    III=Type_III_p_all_CY2011,
+    IV=Type_IV_p_all_CY2011,
+    All=Type_All_p_all_CY2011,
+    Core=Type_CORE_p_all_CY2011
+)
+
+Data_Stacked <- rbind(
+    Data_2001,
+    Data_2011,
+    Data_Change
+    )
+
+detach(Pathos_Data)
+# Want the data in 'long' format
+
+Data_Long <- reshape::melt(
+    Data_Stacked, 
+    id=c("intermed", "year"),
+    measured=c(
+        "I",
+        "II",
+        "III",
+        "IV",
+        "All", 
+        "Core"
+        )
+    )
 
