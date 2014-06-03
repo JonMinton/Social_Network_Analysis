@@ -118,3 +118,43 @@ if (Pathos_Analysis){
     }    
 }
 
+
+# Check for existence of areal unit conversion file in correct format
+
+if (Areal_Unit_Conversion){
+    if (!file.exists("Data/Raw/Areal_Unit_Links.csv")){
+        # Does the file exist as a csv file?
+        print("Areal Unit conversion file not found in csv. Looking for it in sav format")
+        if (!file.exists("Data/Raw/Areal_Unit_Links.sav")){
+            print("Areal unit file not found in sav format. Downloading it from dropbox")
+            # Does the file exist as a sav file?
+            # Download it
+            url <- "https://www.dropbox.com/s/373otkkuo1fdpht/latestpcinfowithlinkpc.sav"
+            dir.create("Data/Raw/", recursive=T, showWarnings=F)
+            tmp <- httr::GET(url,
+                             verbose()
+            )
+            writeBin(
+                content(tmp, "raw"),
+                "Data/Raw/Areal_Unit_Links.sav"
+            )
+            
+        } else {
+            print("File found in SAV format. Converting to csv")
+            Dta <- foreign::read.spss(
+                "Data/Raw/Areal_Unit_Links.sav",
+                to.data.frame=T
+            )
+            write.csv(
+                Dta,
+                file="Data/Raw/Areal_Unit_Links.csv"      
+            )
+        }
+        
+    } else {
+        print("File found in csv format. Loading as R object")
+        Areal_Unit_Links <- read.csv("Data/Raw/Areal_Unit_Links.csv")
+    }    
+}
+
+
