@@ -152,8 +152,13 @@ if (Areal_Unit_Conversion){
         }
         
     } else {
-        print("File found in csv format. Loading")
-        Areal_Unit_Links <- read.csv("Data/Raw/Areal_Unit_Links.csv")
+        if (file.exists("Data/RObj/Areal_Unit_Links.RData")){
+            print("Found Areal Unit Links as R Object. Loading now")
+            load("Data/RObj/Areal_Unit_Links.RData")
+        } else {
+            print("Did not find Areal Unit Link file as RData. Reading from CSV")
+            Areal_Unit_Links <- read.csv("Data/Raw/Areal_Unit_Links.csv")            
+        }
     }    
 }
 
