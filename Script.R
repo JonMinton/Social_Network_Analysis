@@ -15,6 +15,7 @@ require(reshape)
 require(ggplot2)
 require(foreign)
 require(xtable)
+require(corrgram)
 
 # Global variables
 
@@ -47,77 +48,89 @@ if (Pathos_Analysis){
 
 
 
+## Correlations
+
+tmp <- subset(
+    Data_Long,
+    subset=year==2001
+    )
+tmp2 <- tmp[,3:4]
+tmp3 <- unstack(tmp2, value ~ variable)
+
+print.xtable(    
+    xtable(
+        cor(tmp3),
+        caption="Correlation between pathos types in 2001",
+        digits=2
+    ),
+    type="html", 
+    file="Tables/Pathos_Correlations_2001.html",
+    caption.placement="top"
+)
+
+png("Figures/Pathos_Correlations_2001.png", 600, 600)
+corrgram(tmp3, upper.panel=NULL, main="\nCorrelation between pathos types\n2001")
+dev.off()
+
+
+tmp <- subset(
+    Data_Long,
+    subset=year==2011
+)
+tmp2 <- tmp[,3:4]
+tmp3 <- unstack(tmp2, value ~ variable)
+
+print.xtable(    
+    xtable(
+        cor(tmp3),
+        caption="Correlation between pathos types in 2011",
+        digits=2
+    ),
+    type="html", 
+    file="Tables/Pathos_Correlations_2011.html",
+    caption.placement="top"
+)
+
+png("Figures/Pathos_Correlations_2011.png", 600, 600)
+corrgram(tmp3, upper.panel=NULL, main="\nCorrelation between pathos types\n2011")
+dev.off()
+
+
+############################
+
+tmp <- subset(
+    Data_Long,
+    subset=year=="dif"
+)
+tmp2 <- tmp[,3:4]
+tmp3 <- unstack(tmp2, value ~ variable)
+
+print.xtable(    
+    xtable(
+        cor(tmp3),
+        caption="Correlation in difference in pathos types from 2001 to 2011",
+        digits=2
+    ),
+    type="html", 
+    file="Tables/Pathos_Correlations_diff.html",
+    caption.placement="top"
+)
+
+png("Figures/Pathos_Correlations_diff.png", 600, 600)
+corrgram(tmp3, upper.panel=NULL, main="\nCorrelation between pathos types\nDifference from 2001 to 2011")
+dev.off()
 
 
 
 ###################### Tables ###########################################################
 
-tmp <- xtable(ddply(Data_Long, year~variable, summarise, mean=mean(value), sd=sd(value)))
-print.xtable(tmp, file="Tables/Pathos_Summary.html", type="html")
+source("Scripts/Make_Tables.R")
+
+
 
 ###################### Figures ##########################################################
 
-# Visualisation
-
-png("Figures/Density_Lattice_Full.png", width=1200, height=800)
-d <- ggplot(
-    Data_Long,
-    aes(
-        x=value
-        )
-    )
-d2 <- d + geom_density(fill="black", colour="black") + facet_grid(year ~variable)
-d3 <- d2 + xlim(-0.1, 0.1) + ylim(0, 50)
-print(d3)
-dev.off()
-
-
-
-
-types <- c(
-    "I", 
-    "II", 
-    "III", 
-    "IV",
-    "All",
-    "Core"
-    )
-
-
-Data_Long.nomiss <- Data_Long[NULL,]
-# What if 0s are treated as missing
-
-intermeds <- unique(Data_Long$intermed)
-
-for (i in types){
-    
-    tmp.df <- subset(Data_Long, year==2001 & variable==i)
-    tmp1 <- as.character(tmp.df$intermed[which(tmp.df$value==0)])
-    tmp.df <- subset(Data_Long, year==2011 & variable==i)
-    tmp2 <- as.character(tmp.df$intermed[which(tmp.df$value==0)])
-    tmp3 <- union(tmp1, tmp2)
-    
-    tmp4 <- setdiff(intermeds, tmp3)
-    tmp.df <- subset(Data_Long, variable==i)
-    
-    tmp.df <- tmp.df[tmp.df$intermed %in% tmp4,]
-    Data_Long.nomiss <- rbind(df.nomiss, tmp.df)
-    
-}
-
-
-png("Figures/Density_Lattice_No_Missings.png", width=1200, height=800)
-d <- ggplot(
-    Data_Long.nomiss,
-    aes(
-        x=value
-    )
-)
-d2 <- d + geom_density(fill="black", colour="black") + facet_grid(year ~variable)
-d3 <- d2 + xlim(-0.1, 0.1) + ylim(0, 50)
-print(d3)
-dev.off()
-
+source("Scripts/Make_Figures.R")
 
 
 
@@ -173,5 +186,10 @@ Data_Country_of_Origin__merged <- merge(
     all.x=TRUE
     )
 
+
+
+###################
+print.xtable(xtable(head(Data_Country_of_Origin)), file="Tables/Country_of_Origin_Format.html", type="html")
+print.xtable(xtable(head(Areal_Unit_Links)), file="Tables/Areal_Unit_Link_File_Format.html", type="html")
 
 
