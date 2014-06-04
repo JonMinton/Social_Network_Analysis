@@ -152,7 +152,7 @@ if (Areal_Unit_Conversion){
         }
         
     } else {
-        print("File found in csv format. Loading as R object")
+        print("File found in csv format. Loading")
         Areal_Unit_Links <- read.csv("Data/Raw/Areal_Unit_Links.csv")
     }    
 }
