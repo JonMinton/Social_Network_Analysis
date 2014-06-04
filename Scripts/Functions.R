@@ -150,6 +150,8 @@ Make_CPEP_Binary <- function(
 
 
 
+# returns string w/o leading or trailing whitespace
+trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 
 

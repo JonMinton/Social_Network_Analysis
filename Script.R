@@ -145,8 +145,6 @@ source("Scripts/Make_Figures.R")
 #http://www.isdscotland.org/Products-and-Services/GPD-Support/Geography/Postcode-Reference-File/_docs/latestpcinfowithlinkpc.sav?1
 
 
-
-
 # Correlates of intermediate geographies
 
 
@@ -161,10 +159,29 @@ source("Scripts/Make_Figures.R")
 # KS204SC - Immigrant UK
 #url <- "https://www.dropbox.com/s/kzliwt4oldfbrxl/KS204SC.csv"
 
-Data_Country_of_Origin <- source_DropboxData(
+Data_Country_of_Origin.Census_2011 <- repmis::source_DropboxData(
     file="KS204SC.csv",
     key="kzliwt4oldfbrxl"
     )
+
+
+Output_Area_Links_2001_2011 <- repmis::source_DropboxData(
+    file= "2001_Output_Area_to_2011_Output_Area.csv",
+    key="jhg2f7mirnz6a1z"
+    )
+
+Output_Area_Links_Old_New <- repmis::source_DropboxData(
+    file= "2011_Output_Area_Code__Old_to_New.csv",
+    key="pzjkortgo6dr07a"
+    )
+
+# From scotland.gov.uk
+
+Another_Link <- repmis::source_data(
+    url="http://www.scotland.gov.uk/Resource/Doc/933/0075365.txt"
+    )
+
+
 
 
 Df.tmp <- Areal_Unit_Links[,c("Datazone", "INTERMED")]
@@ -187,9 +204,57 @@ Data_Country_of_Origin__merged <- merge(
     )
 
 
+# 
+# ###################
+# print.xtable(xtable(head(Data_Country_of_Origin)), file="Tables/Country_of_Origin_Format.html", type="html")
+# print.xtable(xtable(head(Areal_Unit_Links)), file="Tables/Areal_Unit_Link_File_Format.html", type="html")
+# 
+# 
 
-###################
-print.xtable(xtable(head(Data_Country_of_Origin)), file="Tables/Country_of_Origin_Format.html", type="html")
-print.xtable(xtable(head(Areal_Unit_Links)), file="Tables/Areal_Unit_Link_File_Format.html", type="html")
 
 
+# I think I need to do the followingL
+
+#1 Link Pathos_Data with Areal_Unit_Links 
+# Join: intermed : Pathos_Data
+# with: INTERMED : Areal_Unit_Links
+
+Data_Linked <- merge(
+    x=Data_Long,
+    y=Areal_Unit_Links,
+    by.x="intermed",
+    by.y="INTERMED", 
+    all.x=TRUE
+    )
+
+Data_Linked <- subset(
+    Data_Linked,
+    select=c("intermed", "year", "variable", "value", "PostcodeFull")
+    )
+
+# 2) Link Areal_Unit_Links with Output_Area_Links_2001_2011
+# Join: PostcodeFull: Areal_Unit_Links
+# with: MasterPostCode2001: OutputAreaLInks
+
+Data_Linked$PostcodeFull <- trim(as.character(Data_Linked$PostcodeFull))
+Output_Area_Links_2001_2011$MasterPostcode2001 <- trim(as.character(Output_Area_Links_2001_2011$MasterPostcode2001))
+
+
+Data_Linked <- merge(
+    x=Data_Linked, 
+    y=Output_Area_Links_2001_2011,
+    by.x="PostcodeFull",
+    by.y="MasterPostcode2001",
+    all.x=TRUE
+    )
+
+
+# 3) LInk OutputAreaLInks20012011 with Demo_Data
+# Join OutputArea2011Code: OutputAreaLinks
+# with : 2011 Output Areas : Demo Data
+Data_Linked <- merge(
+    x=Data_Linked,
+    y=Data_Country_of_Origin.Census_2011,
+    by.x="OutputArea2011Code",
+    by.y="X"
+    )
