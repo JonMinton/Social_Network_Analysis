@@ -258,3 +258,26 @@ Data_Linked <- merge(
     by.x="OutputArea2011Code",
     by.y="X"
     )
+
+
+### Additional notes etc from Raw Data on Pathos
+
+# Raw data on pathos:
+#     
+#     https://www.dropbox.com/s/8gb5vqy17pnff4u/GUdata2014q1_UoGprocessed_a_I__AQMENpathos_2a.dta
+# 
+# Syntax file:
+#     
+#     https://www.dropbox.com/s/xhch0jog6pdtxg5/AQMEN_Pathos_GSPC_2jun14_v1g.do
+# 
+# 
+# [] aggregate to postcode sector or postcode area for each year (or rolling averages of 3 years eg)
+# [] social network with postcode sectors as nodes: link between nodes if correlation coefficient > 0.8 eg.
+# [] merge with census data on ethnic change/country of origin to see if changes in pathos correlate with changes in neighbourhood mix
+# [] test whether neighbourhood mix is a factor in explaining social network links (i.e. homophily in language networks)
+# 
+# Good luck!
+#     
+#     g
+
+# 

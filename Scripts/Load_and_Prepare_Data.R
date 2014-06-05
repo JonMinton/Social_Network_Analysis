@@ -10,7 +10,7 @@
 # 2) Have the derived R objects Data.E and Data.V been identified?
 # 3) has the CSV dataset Full_Dataset.csv been identified?
 if (Network_Analysis){
-    if (!file.exists("Data/RObj/Data.RData")){
+    if (!file.exists("Data/RObj/Network_Data.RData")){
         print("Data not found as R object. Searching for CSV file locally")
         
         if (!file.exists("Data/Raw/Full_Dataset.csv")){
@@ -28,26 +28,23 @@ if (Network_Analysis){
             print("Found Dataset as CSV locally, so not downloading again.")
         }
         
-        
-        # Read the file into an R object format
         print("Loading Data from CSV")
-        
-        Data <- read.csv("Data/Raw/Full_Dataset.csv")
-        
+        Full_Dataset <- read.csv("Data/Raw/Full_Dataset.csv")
         
         if (Complete_Only){
-            browser()
             print("Removing incomplete observations")
-            na_indices <- Show_NA_Row_Index(Data)
+            na_indices <- Show_NA_Row_Index(Full_Dataset)
             
-            Data <- Remove_Incomplete_Postcodes(Data, na_indices)
+            Full_Dataset <- Remove_Incomplete_Postcodes(Full_Dataset, na_indices)
+            save(
+                Full_Dataset,
+                file="Data/RObj/Full_Dataset.RData"
+                )
         }
         
     } else {
         print("Data found as R Objects. Loading workspace")
-        
-        load("Data/RObj/Data.RData")
-        
+        load("Data/RObj/Full_Dataset.RData")
     }
     
     print("Seeing whether data have been unpacked into Edges and Vertices")
@@ -76,7 +73,7 @@ if (Network_Analysis){
         # Saving Unpacked Data as Data.RData
         dir.create("Data/RObj", recursive=T, showWarning=F)
         save(Data, Data.E, Data.V,
-             file="Data/RObj/Data.RData"
+             file="Data/RObj/Network_Data.RData"
         )
     } else {
         print("All data appear to have been loaded already.")
@@ -85,36 +82,96 @@ if (Network_Analysis){
 
 # Pathos Data from Gwilym
 if (Pathos_Analysis){
+    
+    print("Looking for Raw(er) Pathos_Data")
+    if (!file.exists("Data/RObj/Pathos_Data_Raw.RData")){
+        print("Raw Pathos Data not found as R object. Searching for CSV file locally")
+        if (!file.exists("Data/Raw/Pathos_Data_Raw.csv")){
+            
+            print("Cannot find Pathos_Data_Raw as csv. Downloading as dta")
+            url <- "https://www.dropbox.com/s/8gb5vqy17pnff4u/GUdata2014q1_UoGprocessed_a_I__AQMENpathos_2a.dta"
+            dir.create("Data/Raw/", recursive=T, showWarnings=F)
+            tmp <- httr::GET(
+                url,
+                verbose()
+                )
+            writeBin(
+                content(tmp, "raw"),
+                "Data/Raw/Pathos_Data_Raw.dta"
+                )
+            
+            print("Downloaded Pathos_Data_Raw as dta. Loading and converting to csv")
+            Pathos_Data_Raw <- foreign::read.dta(
+                file="Data/Raw/Pathos_Data_Raw.dta"
+                )
+            write.csv(
+                Pathos_Data_Raw,
+                file="Data/Raw/Pathos_Data_Raw.csv"
+                )
+            
+            print("Save Pathos_Data_Raw as RObj")
+            save(
+                Pathos_Data_Raw,
+                file="Data/RObj/Pathos_Data_Raw.RData"
+                )
+            
+        } else {
+            print("Pathos_Raw_Data found as CSV. Loading")
+            Pathos_Data_Raw <- read.csv(
+                file="Data/Raw/Pathos_Data_Raw.csv"
+                )
+            print("Saving Pathos_Raw_Data as RObj")
+            save(
+                Pathos_Data_Raw,
+                file="Data/RObj/Pathos_Data_Raw.RData"
+                )
+        }
+    } else {
+        print("Found Pathos_Data_Raw as RData. Loading")
+        load("Data/RObj/Pathos_Data_Raw.RData")
+    }
+    
+    ####
     if (!file.exists("Data/RObj/Pathos_Data.RData")){
         print("Pathos Data not found as R object. Searching for CSV file locally")
         
         if (!file.exists("Data/Raw/Pathos_Data.csv")){
+            print("Cannot find dataset. Downloading.")            
             url <- "https://www.dropbox.com/s/cad37rmu1a3kvxa/average%20pathos_2000to2002__and__2010to2012.csv"
-            print("Cannot find dataset. Downloading.")
             dir.create("Data/Raw/", recursive=T, showWarnings=F)
-            tmp <- httr::GET(url,
-                             verbose()
+            tmp <- httr::GET(
+                url,
+                verbose()
             )
             writeBin(
                 content(tmp, "raw"),
                 "Data/Raw/Pathos_Data.csv"
             )
+            
+            print("Reading Pathos_Data as csv, to save as RObj")
+            
+            Pathos_Data <- read.csv("Data/Raw/Pathos_Data.csv")
+            save(
+                Pathos_Data,
+                file="Data/RObj/Pathos_Data.RData"
+                )
         } else {
             print("Found Dataset as CSV locally, so not downloading again.")
         }
         
         
         # Read the file into an R object format
-        print("Loading Data from CSV")
-        
+        print("Loading Data from CSV, to save as RObj")
         Pathos_Data <- read.csv("Data/Raw/Pathos_Data.csv")
         
+        save(
+            Pathos_Data,
+            file="Data/RObj/Pathos_Data.RData"
+            )
         
     } else {
         print("Data found as R Objects. Loading workspace")
-        
         load("Data/RObj/Pathos_Data.RData")
-        
     }    
 }
 
@@ -138,17 +195,37 @@ if (Areal_Unit_Conversion){
                 content(tmp, "raw"),
                 "Data/Raw/Areal_Unit_Links.sav"
             )
+            print("Loading Areal_Unit_Links as sav, to write out as csv")
+            
+            Areal_Unit_Links <- foreign::read.spss(
+                "Data/Raw/Areal_Unit_Links.sav",
+                to.data.frame=T
+                )
+            write.csv(
+                Areal_Unit_Links,
+                file="Data/Raw/Areal_Unit_Links.csv"
+                )
+            print("Now saving Areal_Unit_Links as RObj")
+            write(
+                Areal_Unit_Links,
+                file="Data/RObj/Areal_Unit_Links.RData"
+                )
             
         } else {
             print("File found in SAV format. Converting to csv")
-            Dta <- foreign::read.spss(
+            Areal_Unit_Links <- foreign::read.spss(
                 "Data/Raw/Areal_Unit_Links.sav",
                 to.data.frame=T
             )
             write.csv(
-                Dta,
+                Areal_Unit_Links,
                 file="Data/Raw/Areal_Unit_Links.csv"      
             )
+            print("Now saving as RObj")
+            save(
+                Areal_Unit_Links,
+                file="Data/RObj/Areal_Unit_Links.RData"
+                )
         }
         
     } else {
@@ -162,4 +239,20 @@ if (Areal_Unit_Conversion){
     }    
 }
 
-
+if (!file.exists("Scripts/Do/Gwilyms_Pathos_File.do")){
+    print("Do file not found locally. Fetching")
+    url <- "https://www.dropbox.com/s/xhch0jog6pdtxg5/AQMEN_Pathos_GSPC_2jun14_v1g.do"
+    dir.create("Scripts/Do/", recursive=T, showWarnings=F)
+    tmp <- httr::GET(url,
+                     verbose()
+    )
+    writeBin(
+        content(tmp, "raw"),
+        "Scripts/Do/Gwilyms_Pathos_File.do"
+    )
+    
+} else {
+    print("Gwilym's Do File already fetched. Doing nothing")
+    
+}
+    
