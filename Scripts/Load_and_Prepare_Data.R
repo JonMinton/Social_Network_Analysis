@@ -255,4 +255,152 @@ if (!file.exists("Scripts/Do/Gwilyms_Pathos_File.do")){
     print("Gwilym's Do File already fetched. Doing nothing")
     
 }
+
+# Loading 2011 Census lookup
+if (Aggregate_Census_OA){
+    if (file.exists("Data/RObj/Census_2011_Lookup__OA_TO_HIGHER_AREAS.RData")){
+        print("Found Census 2011 lookup as RObj. Loading")
+        load("Data/RObj/Census_2011_Lookup__OA_TO_HIGHER_AREAS.RData")
+    } else {
+        print("Did not find Census 2011 Lookup as RObj. Looking for local CSV copy")
+        if (file.exists("Data/Raw/Census_2011_Lookup__OA_TO_HIGHER_AREAS.csv")){
+            print("Found 2011 Census lookup table locally. Loading from CSV")
+            Census_2011_Lookup__OA_TO_HIGHER_Areas <- read.csv(
+                "Data/Raw/Census_2011_Lookup__OA_TO_HIGHER_AREAS.csv"
+            )    
+            save(
+                Census_2011_Lookup__OA_TO_HIGHER_AREAS,
+                file="Data/RObj/Census_2011_Lookup__OA_TO_HIGHER_AREAS.RData" 
+            )
+            
+        }   else {
+            print("Did not find census 2011 Lookup as local CSV. Downloading from Dropbox")
+            Census_2011_Lookup__OA_TO_HIGHER_AREAS <- repmis::source_DropboxData(
+                file="Census_2011_Lookup__OA_TO_HIGHER_AREAS.csv",
+                key="95x5ozuw0c6xgxk"
+            )
+            write.csv(
+                Census_2011_Lookup__OA_TO_HIGHER_AREAS,
+                file="Data/Raw/Census_2011_Lookup__OA_TO_HIGHER_AREAS.csv"
+            )
+            save(
+                Census_2011_Lookup__OA_TO_HIGHER_AREAS,
+                file="Data/RObj/Census_2011_Lookup__OA_TO_HIGHER_AREAS.RData"
+            )
+        }    
+    }    
+}
+
+if (Use_Census_Variables){
+    print("Fetching 2011 Country of Origin file")
     
+    if (file.exists("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")){
+        print("2011 Country of Origin found as R Object. Loading")
+        load("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")
+        
+    } else {
+        print("2011 Country of Origin file not found as R Object. Looking for local CSV to load")
+        if (file.exists("Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv")){
+            print("2011 Country of Origin file found as csv locally. Reading")
+            Census_2011__KS204SC__Country_Of_Origin <- read.csv(
+                "Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
+                )
+            
+            save(
+                Census_2011__KS204SC__Country_Of_Origin,
+                file="Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData"
+                )
+        } else {
+            print("2011 Country of Origin file not found locally. Downloading from Dropbox")
+            Census_2011__KS204SC__Country_Of_Origin <- repmis::source_DropboxData(
+                file="KS204SC.csv",
+                key="kzliwt4oldfbrxl"
+            )
+            
+            write.csv(
+                Census_2011__KS204SC__Country_Of_Origin,
+                file="Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
+                )
+            save(
+                Census_2011__KS204SC__Country_Of_Origin,
+                file="Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData"
+            )
+        }
+    }
+    
+    print("Fetching 2001 Country of Origin dataset")
+    
+    if (file.exists("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")){
+        print("2001 Country of Origin found as R Object. Loading")
+        load("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")
+        
+    } else {
+        print("2001 Country of Origin file not found as R Object. Looking for local CSV to load")
+        if (file.exists("Data/Raw/Census_2001__KS005__Country_Of_Origin.csv")){
+            print("2001 Country of Origin file found as csv locally. Reading")
+            Census_2001__KS005__Country_Of_Origin <- read.csv(
+                "Data/Raw/Census_2001__KS005__Country_Of_Origin.csv"
+            )
+
+            save(
+                Census_2001__KS005__Country_Of_Origin,
+                file="Data/RObj/Census_2001__KS005__Country_Of_Origin.RData"
+            )
+        } else {
+            print("2001 Country of Origin file not found locally. Downloading from Dropbox")
+            Census_2001__KS005__Country_Of_Origin <- repmis::source_DropboxData(
+                file="Census__2001__KS005__Country_Of_Origin.csv",
+                key="erj713wnp535q20"
+            )
+            
+            write.csv(
+                Census_2001__KS005__Country_Of_Origin,
+                file="Data/Raw/Census_2001__KS005__Country_Of_Origin.csv"
+            )
+            
+            save(
+                Census_2001__KS005__Country_Of_Origin,
+                file="Data/RObj/Census_2001__KS005__Country_Of_Origin.RData"
+            )
+        }
+    }
+    
+    print("Fetching 2001 OUtput Area Lookup")
+    if (file.exists("Data/RObj/Census_2001_OA_Lookup.RData")){
+        print("Found as R Object. Loading")
+        load("Data/RObj/Census_2001_OA_Lookup.RData")
+        
+    } else {
+        print("Not found as R Object. Looking for local CSV to load")
+        if (file.exists("Data/Raw/Census_2001_OA_Lookup.csv")){
+            print("Found as csv locally. Reading")
+            Census_2001_OA_Lookup <- read.csv(
+                "Data/Raw/Census_2001_OA_Lookup.csv"
+            )
+            
+            save(
+                Census_2001_OA_Lookup,
+                file="Data/RObj/Census_2001_OA_Lookup.RData"
+            )
+        } else {
+            print("Not found locally. Downloading from Dropbox")
+            Census_2001_OA_Lookup <- repmis::source_DropboxData(
+                file="OUTPUT_AREA_2001_LOOKUP.csv",
+                key="39wszvlpxy4qvpf"
+            )
+          
+            
+            write.csv(
+                Census_2001_OA_Lookup,
+                file="Data/Raw/Census_2001_OA_Lookup.csv"
+            )
+            save(
+                Census_2001_OA_Lookup,
+                file="Data/RObj/Census_2001_OA_Lookup.RData"
+            )
+        }
+    }
+    
+    
+}
+ 

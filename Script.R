@@ -22,7 +22,9 @@ require(corrgram)
 Complete_Only <- T # Should only complete data be used? 
 Network_Analysis <- F
 Pathos_Analysis <- T
-Areal_Unit_Conversion <- T
+Areal_Unit_Conversion <- F
+Aggregate_Census_OA <- T
+Use_Census_Variables <- T
 
 # Source files
 
@@ -36,18 +38,84 @@ if (Network_Analysis){
 }
 
 
-
-
 if (Pathos_Analysis){
     
 # Do stuff here    
     source("Scripts/Make_Long_Format_Pathos_Data.R")
-    
-    
 }
 
 
+###############################################################################
+# Load Country of Origin Data: merge OA to Intermediate geography
 
+# Stage 1: Merge 
+#   Census_2011__KS204SC__Country_Of_Origin
+#       with
+#   Census_2011_Lookup__OA_TO_HIGHER_AREAS
+
+y.ss <- subset(
+    Census_2011_Lookup__OA_TO_HIGHER_AREAS,
+    select=c(
+        "OutputArea2011Code",
+        "IntermediateZone2001Code",
+        "MasterPostcode"
+        )
+    )
+
+x1 <- Census_2011__KS204SC__Country_Of_Origin
+
+x2 <- merge(
+    x=x1,
+    y=y.ss,
+    
+    by.x="X",
+    by.y="OutputArea2011Code",
+    all=T
+    )
+
+
+x3 <- merge(
+    x=x2,
+    y=Data_Long,
+    by.x="IntermediateZone2001Code",
+    by.y="intermed",
+    all=T
+    )
+
+x4 <- subset(x3, subset=!is.na(x3$value))
+
+# Want to know proportion Non-Scottish
+
+prop_nonScottish <- 1 - x4[,"Scotland"]/x4[,"All.people"]
+
+plot(density(prop_nonScottish))
+origin.deciles <- quantile(prop_nonScottish, 0:10/10)
+
+p2 <- cut(prop_nonScottish, origin.deciles, include.lowest=T, labels=F)
+head(p2)
+
+
+################################################################################
+# Do the same with 2001 Country of Origin Data
+
+Pathos_Data
+ : intermed [A]
+
+Census_2011_Lookup_OA_TO_HIGHER_AREAS
+ : OutputArea2011Code
+ : OutputArea2001Code [B]
+ : IntermediateZone2001Code [A]
+
+
+Census_2001_OA_Lookup
+  : OutputArea2001Code [B]
+  : NRSoldOutputArea2001Code [C]
+
+
+Census_2001__KS005__Country_Of_Origin
+  : Zone.Code [C]
+
+##############################################################################
 ## Correlations
 
 tmp <- subset(
@@ -159,10 +227,6 @@ source("Scripts/Make_Figures.R")
 # KS204SC - Immigrant UK
 #url <- "https://www.dropbox.com/s/kzliwt4oldfbrxl/KS204SC.csv"
 
-Data_Country_of_Origin.Census_2011 <- repmis::source_DropboxData(
-    file="KS204SC.csv",
-    key="kzliwt4oldfbrxl"
-    )
 
 
 Output_Area_Links_2001_2011 <- repmis::source_DropboxData(
