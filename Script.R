@@ -143,6 +143,8 @@ if (Pathos_Analysis){
     
     print(d4)
     dev.off()
+    
+    
     ###########
     png("Figures/Lattice_Change_Pathos_Change_Prop_English__No_Miss.png", width=1200, height=800)
     d <- ggplot(
@@ -181,6 +183,26 @@ if (Pathos_Analysis){
     
     print(d4)
     dev.off()
+    
+    
+    ##############################
+    
+    
+    # [] merge with census data on ethnic change/country of origin to see if changes in pathos correlate with changes in neighbourhood mix
+    Mod_Fun <- function(df){
+        df
+        lm(value ~ proportion_Scottish + proportion_English, data=df)
+    }
+    
+    models <- dlply(Pathos_Demos, .(year, variable), Mod_Fun)
+    
+    sink("Text_Outputs/Regression_Model_Inputs_01.txt")
+    llply(models, summary)
+    sink()    
+    
+    # [] test whether neighbourhood mix is a factor in explaining social network links (i.e. homophily in language networks)
+
+    
     
 }
 

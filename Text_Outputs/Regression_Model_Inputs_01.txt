@@ -1,0 +1,406 @@
+$`2001.I`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.007390 -0.001647 -0.001183  0.000632  0.036501 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)  
+(Intercept)          0.005014   0.005229   0.959   0.3381  
+proportion_Scottish -0.004200   0.005341  -0.786   0.4320  
+proportion_English   0.016464   0.008325   1.978   0.0485 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.003646 on 515 degrees of freedom
+Multiple R-squared:  0.0559,	Adjusted R-squared:  0.05224 
+F-statistic: 15.25 on 2 and 515 DF,  p-value: 3.688e-07
+
+
+$`2001.II`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.015214 -0.004466 -0.000567  0.003940  0.037934 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)
+(Intercept)         0.005430   0.010945   0.496    0.620
+proportion_Scottish 0.007861   0.011181   0.703    0.482
+proportion_English  0.020010   0.017427   1.148    0.251
+
+Residual standard error: 0.007631 on 515 degrees of freedom
+Multiple R-squared:  0.003282,	Adjusted R-squared:  -0.0005884 
+F-statistic: 0.848 on 2 and 515 DF,  p-value: 0.4289
+
+
+$`2001.III`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+       Min         1Q     Median         3Q        Max 
+-0.0107654 -0.0052035 -0.0005701  0.0044443  0.0233623 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)  
+(Intercept)          0.017246   0.010234   1.685   0.0926 .
+proportion_Scottish -0.007169   0.010455  -0.686   0.4932  
+proportion_English  -0.013050   0.016295  -0.801   0.4236  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.007136 on 515 degrees of freedom
+Multiple R-squared:  0.001245,	Adjusted R-squared:  -0.002633 
+F-statistic: 0.3211 on 2 and 515 DF,  p-value: 0.7255
+
+
+$`2001.IV`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.032698 -0.007357 -0.000697  0.007331  0.048328 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          0.09187    0.01827   5.028 6.86e-07 ***
+proportion_Scottish -0.06253    0.01867  -3.350 0.000868 ***
+proportion_English  -0.07389    0.02909  -2.540 0.011386 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01274 on 515 degrees of freedom
+Multiple R-squared:  0.02248,	Adjusted R-squared:  0.01869 
+F-statistic: 5.922 on 2 and 515 DF,  p-value: 0.002865
+
+
+$`2001.All`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.063096 -0.011714 -0.000913  0.011239  0.071071 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          0.11957    0.02771   4.315 1.91e-05 ***
+proportion_Scottish -0.06604    0.02830  -2.333    0.020 *  
+proportion_English  -0.05047    0.04411  -1.144    0.253    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01932 on 515 degrees of freedom
+Multiple R-squared:  0.01681,	Adjusted R-squared:  0.01299 
+F-statistic: 4.401 on 2 and 515 DF,  p-value: 0.01272
+
+
+$`2001.Core`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.019074 -0.005888 -0.001551  0.004735  0.065906 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          0.0436471  0.0121529   3.592  0.00036 ***
+proportion_Scottish -0.0359731  0.0124142  -2.898  0.00392 ** 
+proportion_English   0.0008116  0.0193494   0.042  0.96656    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.008473 on 515 degrees of freedom
+Multiple R-squared:  0.06575,	Adjusted R-squared:  0.06212 
+F-statistic: 18.12 on 2 and 515 DF,  p-value: 2.477e-08
+
+
+$`2011.I`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.003687 -0.003019 -0.002167  0.000859  0.080310 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(>|t|)
+(Intercept)         -0.0003996  0.0046489  -0.086    0.932
+proportion_Scottish  0.0034369  0.0048440   0.710    0.478
+proportion_English   0.0062109  0.0096986   0.640    0.522
+
+Residual standard error: 0.006217 on 515 degrees of freedom
+Multiple R-squared:  0.00107,	Adjusted R-squared:  -0.00281 
+F-statistic: 0.2757 on 2 and 515 DF,  p-value: 0.7591
+
+
+$`2011.II`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.020877 -0.007192 -0.001305  0.004814  0.067305 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)   
+(Intercept)         0.0002423  0.0089707   0.027  0.97846   
+proportion_Scottish 0.0145114  0.0093472   1.552  0.12116   
+proportion_English  0.0489953  0.0187149   2.618  0.00911 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.012 on 515 degrees of freedom
+Multiple R-squared:  0.01329,	Adjusted R-squared:  0.00946 
+F-statistic: 3.469 on 2 and 515 DF,  p-value: 0.03189
+
+
+$`2011.III`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.017716 -0.007904 -0.001140  0.005800  0.091641 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)  
+(Intercept)          0.020556   0.009438   2.178   0.0299 *
+proportion_Scottish -0.002222   0.009834  -0.226   0.8214  
+proportion_English  -0.037410   0.019690  -1.900   0.0580 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01262 on 515 degrees of freedom
+Multiple R-squared:  0.01086,	Adjusted R-squared:  0.007019 
+F-statistic: 2.827 on 2 and 515 DF,  p-value: 0.06009
+
+
+$`2011.IV`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.039291 -0.011957 -0.002101  0.009127  0.247562 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          0.06275    0.01745   3.597 0.000353 ***
+proportion_Scottish -0.02498    0.01818  -1.374 0.170017    
+proportion_English  -0.05345    0.03640  -1.468 0.142624    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.02333 on 515 degrees of freedom
+Multiple R-squared:  0.004689,	Adjusted R-squared:  0.0008235 
+F-statistic: 1.213 on 2 and 515 DF,  p-value: 0.2981
+
+
+$`2011.All`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.073552 -0.019135 -0.001056  0.015426  0.212038 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          0.08292    0.02308   3.593 0.000359 ***
+proportion_Scottish -0.00907    0.02405  -0.377 0.706230    
+proportion_English  -0.03517    0.04816  -0.730 0.465503    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.03087 on 515 degrees of freedom
+Multiple R-squared:  0.001082,	Adjusted R-squared:  -0.002797 
+F-statistic: 0.2789 on 2 and 515 DF,  p-value: 0.7567
+
+
+$`2011.Core`
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.023462 -0.009419 -0.000727  0.006088  0.066396 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)  
+(Intercept)         0.003574   0.010050   0.356   0.7222  
+proportion_Scottish 0.013019   0.010471   1.243   0.2143  
+proportion_English  0.037613   0.020966   1.794   0.0734 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01344 on 515 degrees of freedom
+Multiple R-squared:  0.006215,	Adjusted R-squared:  0.002355 
+F-statistic:  1.61 on 2 and 515 DF,  p-value: 0.2008
+
+
+$dif.I
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.032131  0.000246  0.000456  0.000684  0.009850 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(>|t|)
+(Intercept)         -0.0001444  0.0003700  -0.390    0.697
+proportion_Scottish  0.0128403  0.0105715   1.215    0.226
+proportion_English  -0.0423397  0.0461139  -0.918    0.360
+
+Residual standard error: 0.003778 on 162 degrees of freedom
+Multiple R-squared:  0.01976,	Adjusted R-squared:  0.007655 
+F-statistic: 1.633 on 2 and 162 DF,  p-value: 0.1986
+
+
+$dif.II
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.036844 -0.011156 -0.002030  0.007298  0.077458 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)  
+(Intercept)         0.002220   0.001892   1.174   0.2422  
+proportion_Scottish 0.076308   0.054044   1.412   0.1599  
+proportion_English  0.595003   0.235744   2.524   0.0126 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01931 on 162 degrees of freedom
+Multiple R-squared:  0.04059,	Adjusted R-squared:  0.02875 
+F-statistic: 3.427 on 2 and 162 DF,  p-value: 0.03485
+
+
+$dif.III
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.035442 -0.010716 -0.003156  0.009173  0.094692 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          0.006205   0.001764   3.518 0.000564 ***
+proportion_Scottish -0.080796   0.050388  -1.603 0.110776    
+proportion_English   0.023296   0.219796   0.106 0.915721    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01801 on 162 degrees of freedom
+Multiple R-squared:  0.01783,	Adjusted R-squared:  0.005705 
+F-statistic:  1.47 on 2 and 162 DF,  p-value: 0.2329
+
+
+$dif.IV
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.084150 -0.017485 -0.002542  0.011923  0.249999 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)
+(Intercept)          0.004483   0.003387   1.324    0.187
+proportion_Scottish -0.150906   0.096766  -1.559    0.121
+proportion_English  -0.454373   0.422106  -1.076    0.283
+
+Residual standard error: 0.03458 on 162 degrees of freedom
+Multiple R-squared:  0.01727,	Adjusted R-squared:  0.005132 
+F-statistic: 1.423 on 2 and 162 DF,  p-value: 0.244
+
+
+$dif.All
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.08342 -0.02646 -0.00164  0.01845  0.23568 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)   
+(Intercept)          0.012722   0.004272   2.978  0.00335 **
+proportion_Scottish -0.144880   0.122062  -1.187  0.23699   
+proportion_English   0.111467   0.532446   0.209  0.83444   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.04362 on 162 degrees of freedom
+Multiple R-squared:  0.01071,	Adjusted R-squared:  -0.001505 
+F-statistic: 0.8768 on 2 and 162 DF,  p-value: 0.4181
+
+
+$dif.Core
+
+Call:
+lm(formula = value ~ proportion_Scottish + proportion_English, 
+    data = df)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.032179 -0.010645 -0.003403  0.008229  0.076894 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)   
+(Intercept)         0.005403   0.001736   3.112   0.0022 **
+proportion_Scottish 0.033345   0.049604   0.672   0.5024   
+proportion_English  0.186764   0.216379   0.863   0.3893   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01773 on 162 degrees of freedom
+Multiple R-squared:  0.00574,	Adjusted R-squared:  -0.006535 
+F-statistic: 0.4676 on 2 and 162 DF,  p-value: 0.6273
+
+

@@ -374,8 +374,10 @@ if (!file.exists("Data/RObj/Pathos_Demos.RData")){
                 )
             )
             
+            tmp10 <- tmp9[!duplicated(tmp9),]
             
-            Pathos_Demos <- tmp9
+            
+            Pathos_Demos <- tmp10
             
             rm(list=ls(pattern="tmp*"))
             rm(list=ls(pattern="^x"))
@@ -387,6 +389,11 @@ if (!file.exists("Data/RObj/Pathos_Demos.RData")){
                 Pathos_Demos,
                 file="Data/Raw/Pathos_Demos.csv"
             )
+            
+            save(
+                Pathos_Demos,
+                file="Data/RObj/Pathos_Demos.RData"
+                )
         } else {
             print("Found as csv. Loading")
             Pathos_Demos <- read.csv("Data/Raw/Pathos_Demos.csv")
