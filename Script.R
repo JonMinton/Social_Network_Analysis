@@ -16,6 +16,8 @@ require(ggplot2)
 require(foreign)
 require(xtable)
 require(corrgram)
+require(gdata)
+
 
 # Global variables
 
@@ -42,78 +44,155 @@ if (Pathos_Analysis){
     
 # Do stuff here    
     source("Scripts/Make_Long_Format_Pathos_Data.R")
+    
+    if (!exists("Pathos_Demos")){
+        print("Cannot Find Pathos_Demos data as RObject. Seeking")
+        source("Scripts/Merge_Pathos_With_Census.R")
+    }
+    
+    # ggplot of change in Pathos with change in proportion_Scottish
+    
+    tmp <- subset(
+        Pathos_Demos, 
+        subset=year=="dif"          
+                  )
+    tmp2 <- subset(
+        Pathos_Demos,
+        subset=year=="2001"
+    )
+    
+    tmp3 <- plyr::rename(
+        tmp2,
+        c(
+            "proportion_Scottish" = "orig_prop_Scottish",
+            "proportion_English"= "orig_prop_English",
+            "proportion_Other_EU" = "orig_prop_Other_EU",
+            "proportion_Elsewhere" = "orig_prop_Elsewhere"
+            )
+        )
+    
+    tmp4 <- gdata::remove.vars(
+        tmp3,
+        names=c(
+            "Total",
+            "England",
+            "Scotland",
+            "Wales",
+            "Northern_Ireland",
+            "Republic_of_Ireland",
+            "Other_EU",
+            "Elsewhere",
+            "year",
+            "variable",
+            "value"
+            )
+        )
+    
+    tmp2a <- gdata::remove.vars(
+        tmp,
+        names=c(
+            "year"
+            )
+        )
+    
+    tmp5 <- merge(
+        x=tmp2a,
+        y=tmp4,
+        by="intermed",
+        all.x=T,
+        all.y=F
+        )
+    
+
+    png("Figures/Lattice_Change_Pathos_Change_Prop_Scottish.png", width=1200, height=800)
+    d <- ggplot(
+        tmp5,
+        aes(
+            x=value,
+            y=proportion_Scottish,
+            colour=orig_prop_Scottish
+        )
+    )
+    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
+    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion Scottish")
+    print(d3)
+    dev.off()
+    
+    
+    # Try again removing 0 values as if not real
+    
+    tmp6 <- subset(
+        tmp5, 
+        subset=value!=0
+        )
+    
+    png("Figures/Lattice_Change_Pathos_Change_Prop_Scottish__No_Miss.png", width=1200, height=800)
+    d <- ggplot(
+        tmp6,
+        aes(
+            x=value,
+            y=proportion_Scottish,
+            colour=orig_prop_Scottish
+        )
+    )
+    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
+    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion Scottish")
+    d4 <- d3 + guides(
+        colour=guide_colourbar(title="Original\nProportion\nScottish")
+    )
+    
+    print(d4)
+    dev.off()
+    ###########
+    png("Figures/Lattice_Change_Pathos_Change_Prop_English__No_Miss.png", width=1200, height=800)
+    d <- ggplot(
+        tmp6,
+        aes(
+            x=value,
+            y=proportion_English,
+            colour=orig_prop_English
+        )
+    )
+    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
+    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion English")
+    d4 <- d3 + guides(
+        colour=guide_colourbar(title="Original\nProportion\nEnglish")
+    )
+    
+    print(d4)
+    dev.off()
+    
+    
+    ###########
+    png("Figures/Lattice_Change_Pathos_Change_Prop_Outside__No_Miss.png", width=1200, height=800)
+    d <- ggplot(
+        tmp6,
+        aes(
+            x=value,
+            y=proportion_Elsewhere,
+            colour=orig_prop_Elsewhere
+        )
+    )
+    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
+    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion from Outside of EU")
+    d4 <- d3 + guides(
+        colour=guide_colourbar(title="Original Proportion\nOutside of EU")
+    )
+    
+    print(d4)
+    dev.off()
+    
 }
 
 
-###############################################################################
-# Load Country of Origin Data: merge OA to Intermediate geography
 
-# Stage 1: Merge 
-#   Census_2011__KS204SC__Country_Of_Origin
-#       with
-#   Census_2011_Lookup__OA_TO_HIGHER_AREAS
-
-y.ss <- subset(
-    Census_2011_Lookup__OA_TO_HIGHER_AREAS,
-    select=c(
-        "OutputArea2011Code",
-        "IntermediateZone2001Code",
-        "MasterPostcode"
-        )
-    )
-
-x1 <- Census_2011__KS204SC__Country_Of_Origin
-
-x2 <- merge(
-    x=x1,
-    y=y.ss,
-    
-    by.x="X",
-    by.y="OutputArea2011Code",
-    all=T
-    )
+########### Do Analysis  on Pathos_Demos
 
 
-x3 <- merge(
-    x=x2,
-    y=Data_Long,
-    by.x="IntermediateZone2001Code",
-    by.y="intermed",
-    all=T
-    )
 
-x4 <- subset(x3, subset=!is.na(x3$value))
-
-# Want to know proportion Non-Scottish
-
-prop_nonScottish <- 1 - x4[,"Scotland"]/x4[,"All.people"]
-
-plot(density(prop_nonScottish))
-origin.deciles <- quantile(prop_nonScottish, 0:10/10)
-
-p2 <- cut(prop_nonScottish, origin.deciles, include.lowest=T, labels=F)
-head(p2)
-
-
-################################################################################
-# Do the same with 2001 Country of Origin Data
-
-Pathos_Data
- : intermed [A]
-
-Census_2011_Lookup_OA_TO_HIGHER_AREAS
- : OutputArea2011Code
- : OutputArea2001Code [B]
- : IntermediateZone2001Code [A]
-
-
-Census_2001_OA_Lookup
-  : OutputArea2001Code [B]
-  : NRSoldOutputArea2001Code [C]
-
-
-Census_2001__KS005__Country_Of_Origin
-  : Zone.Code [C]
+# impora
+# Census_2001__KS005__Country_Of_Origin
+#   : Zone.Code [C]
 
 ##############################################################################
 ## Correlations
