@@ -318,7 +318,7 @@ if (Use_Census_Variables){
                     file="KS204SC.csv",
                     key="kzliwt4oldfbrxl"
                 )
-                
+                Census_2011__KS204SC__Country_Of_Origin <- Tidy_2011_Census_Table(Census_2011__KS204SC__Country_Of_Origin)
                 write.csv(
                     Census_2011__KS204SC__Country_Of_Origin,
                     file="Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
@@ -385,7 +385,6 @@ if (Use_Census_Variables){
                 Census_2011__KS201SC__Ethnicity <- read.csv(
                     "Data/Raw/Census_2011__KS201SC__Ethnicity.csv"
                 )
-                
                 save(
                     Census_2011__KS201SC__Ethnicity,
                     file="Data/RObj/Census_2011__KS201SC__Ethnicity.RData"
@@ -394,8 +393,11 @@ if (Use_Census_Variables){
                 print("2011 file not found locally. Downloading from Dropbox")
                 Census_2011__KS201SC__Ethnicity <- repmis::source_DropboxData(
                     file="KS201SC.csv",
-                    key="adxgd6edmvgyk82"
+                    key="t4n19qx7kjwas9m"
+
                 )
+                Census_2011__KS201SC__Ethnicity <- Tidy_2011_Census_Table(Census_2011__KS201SC__Ethnicity)
+
                 
                 write.csv(
                     Census_2011__KS201SC__Ethnicity,
@@ -463,6 +465,7 @@ if (Use_Census_Variables){
                     "Data/Raw/Census_2011__KS209SCb__Religion.csv"
                 )
                 
+                
                 save(
                     Census_2011__KS209SCb__Religion,
                     file="Data/RObj/Census_2011__KS209SCb__Religion.RData"
@@ -471,13 +474,17 @@ if (Use_Census_Variables){
                 print("2011 file not found locally. Downloading from Dropbox")
                 Census_2011__KS209SCb__Religion <- repmis::source_DropboxData(
                     file="KS209SCb.csv",
-                    key="aejzg3hbu443pxl"
+                    key="fr03pw7x7fcawkh"
                 )
+
+                Census_2011__KS209SCb__Religion <- Tidy_2011_Census_Table(Census_2011__KS209SCb__Religion)
+                
                 
                 write.csv(
                     Census_2011__KS209SCb__Religion,
                     file="Data/Raw/Census_2011__KS209SCb__Religion.csv"
                 )
+                
                 save(
                     Census_2011__KS209SCb__Religion,
                     file="Data/RObj/Census_2011__KS209SCb__Religion.RData"
@@ -485,6 +492,9 @@ if (Use_Census_Variables){
             }
         }
         
+        ###############################################################################
+        #### Religion - 2001 
+        ###############################################################################
         print("Loading 2001 census table")
         # 2001 Table is KS007
         url <- "https://www.dropbox.com/s//"
@@ -562,4 +572,7 @@ if (Use_Census_Variables){
     }
     
 }
+
+rm(tmp, url)
+
  
