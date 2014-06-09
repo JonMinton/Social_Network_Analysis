@@ -292,78 +292,238 @@ if (Aggregate_Census_OA){
 }
 
 if (Use_Census_Variables){
-    print("Fetching 2011 Country of Origin file")
     
-    if (file.exists("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")){
-        print("2011 Country of Origin found as R Object. Loading")
-        load("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")
+    if ("Country_Of_Origin" %in% Census_Variables){
+        print("Fetching 2011 Country of Origin file")
         
-    } else {
-        print("2011 Country of Origin file not found as R Object. Looking for local CSV to load")
-        if (file.exists("Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv")){
-            print("2011 Country of Origin file found as csv locally. Reading")
-            Census_2011__KS204SC__Country_Of_Origin <- read.csv(
-                "Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
-                )
+        if (file.exists("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")){
+            print("2011 Country of Origin found as R Object. Loading")
+            load("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")
             
-            save(
-                Census_2011__KS204SC__Country_Of_Origin,
-                file="Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData"
-                )
         } else {
-            print("2011 Country of Origin file not found locally. Downloading from Dropbox")
-            Census_2011__KS204SC__Country_Of_Origin <- repmis::source_DropboxData(
-                file="KS204SC.csv",
-                key="kzliwt4oldfbrxl"
-            )
-            
-            write.csv(
-                Census_2011__KS204SC__Country_Of_Origin,
-                file="Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
+            print("2011 Country of Origin file not found as R Object. Looking for local CSV to load")
+            if (file.exists("Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv")){
+                print("2011 Country of Origin file found as csv locally. Reading")
+                Census_2011__KS204SC__Country_Of_Origin <- read.csv(
+                    "Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
                 )
-            save(
-                Census_2011__KS204SC__Country_Of_Origin,
-                file="Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData"
-            )
+                
+                save(
+                    Census_2011__KS204SC__Country_Of_Origin,
+                    file="Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData"
+                )
+            } else {
+                print("2011 Country of Origin file not found locally. Downloading from Dropbox")
+                Census_2011__KS204SC__Country_Of_Origin <- repmis::source_DropboxData(
+                    file="KS204SC.csv",
+                    key="kzliwt4oldfbrxl"
+                )
+                
+                write.csv(
+                    Census_2011__KS204SC__Country_Of_Origin,
+                    file="Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
+                )
+                save(
+                    Census_2011__KS204SC__Country_Of_Origin,
+                    file="Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData"
+                )
+            }
         }
+        
+        print("Fetching 2001 Country of Origin dataset")
+        
+        if (file.exists("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")){
+            print("2001 Country of Origin found as R Object. Loading")
+            load("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")
+            
+        } else {
+            print("2001 Country of Origin file not found as R Object. Looking for local CSV to load")
+            if (file.exists("Data/Raw/Census_2001__KS005__Country_Of_Origin.csv")){
+                print("2001 Country of Origin file found as csv locally. Reading")
+                Census_2001__KS005__Country_Of_Origin <- read.csv(
+                    "Data/Raw/Census_2001__KS005__Country_Of_Origin.csv"
+                )
+                
+                save(
+                    Census_2001__KS005__Country_Of_Origin,
+                    file="Data/RObj/Census_2001__KS005__Country_Of_Origin.RData"
+                )
+            } else {
+                print("2001 Country of Origin file not found locally. Downloading from Dropbox")
+                Census_2001__KS005__Country_Of_Origin <- repmis::source_DropboxData(
+                    file="Census__2001__KS005__Country_Of_Origin.csv",
+                    key="erj713wnp535q20"
+                )
+                
+                write.csv(
+                    Census_2001__KS005__Country_Of_Origin,
+                    file="Data/Raw/Census_2001__KS005__Country_Of_Origin.csv"
+                )
+                
+                save(
+                    Census_2001__KS005__Country_Of_Origin,
+                    file="Data/RObj/Census_2001__KS005__Country_Of_Origin.RData"
+                )
+            }
+        }
+           
+        
     }
     
-    print("Fetching 2001 Country of Origin dataset")
-    
-    if (file.exists("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")){
-        print("2001 Country of Origin found as R Object. Loading")
-        load("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")
-        
-    } else {
-        print("2001 Country of Origin file not found as R Object. Looking for local CSV to load")
-        if (file.exists("Data/Raw/Census_2001__KS005__Country_Of_Origin.csv")){
-            print("2001 Country of Origin file found as csv locally. Reading")
-            Census_2001__KS005__Country_Of_Origin <- read.csv(
-                "Data/Raw/Census_2001__KS005__Country_Of_Origin.csv"
-            )
-
-            save(
-                Census_2001__KS005__Country_Of_Origin,
-                file="Data/RObj/Census_2001__KS005__Country_Of_Origin.RData"
-            )
+    if ("Ethnicity" %in% Census_Variables){
+        print("Loading Ethnicity Census Variables")
+        # 2011 Table is KS201SC
+        print("Loading 2011 Census Table")
+        if (file.exists("Data/RObj/Census_2011__KS201SC__Ethnicity.RData")){
+            print("2011 Ethnicity found as R Object. Loading")
+            load("Data/RObj/Census_2011__KS201SC__Ethnicity.RData")
+            
         } else {
-            print("2001 Country of Origin file not found locally. Downloading from Dropbox")
-            Census_2001__KS005__Country_Of_Origin <- repmis::source_DropboxData(
-                file="Census__2001__KS005__Country_Of_Origin.csv",
-                key="erj713wnp535q20"
-            )
-            
-            write.csv(
-                Census_2001__KS005__Country_Of_Origin,
-                file="Data/Raw/Census_2001__KS005__Country_Of_Origin.csv"
-            )
-            
-            save(
-                Census_2001__KS005__Country_Of_Origin,
-                file="Data/RObj/Census_2001__KS005__Country_Of_Origin.RData"
-            )
+            print("2011 file not found as R Object. Looking for local CSV to load")
+            if (file.exists("Data/Raw/Census_2011__KS201SC__Ethnicity.csv")){
+                print("2011  file found as csv locally. Reading")
+                Census_2011__KS201SC__Ethnicity <- read.csv(
+                    "Data/Raw/Census_2011__KS201SC__Ethnicity.csv"
+                )
+                
+                save(
+                    Census_2011__KS201SC__Ethnicity,
+                    file="Data/RObj/Census_2011__KS201SC__Ethnicity.RData"
+                )
+            } else {
+                print("2011 file not found locally. Downloading from Dropbox")
+                Census_2011__KS201SC__Ethnicity <- repmis::source_DropboxData(
+                    file="KS201SC.csv",
+                    key="adxgd6edmvgyk82"
+                )
+                
+                write.csv(
+                    Census_2011__KS201SC__Ethnicity,
+                    file="Data/Raw/Census_2011__KS201SC__Ethnicity.csv"
+                )
+                save(
+                    Census_2011__KS201SC__Ethnicity,
+                    file="Data/RObj/Census_2011__KS201SC__Ethnicity.RData"
+                )
+            }
         }
+        
+        print("Loading 2001 Census Table")
+        # 2001 Table is KS006
+        if (file.exists("Data/RObj/Census_2001__KS006__Ethnicity.RData")){
+            print("2001 Ethnicity found as R Object. Loading")
+            load("Data/RObj/Census_2001__KS006__Ethnicity.RData")
+            
+        } else {
+            print("2001 file not found as R Object. Looking for local CSV to load")
+            if (file.exists("Data/Raw/Census_2001__KS006__Ethnicity.csv")){
+                print("2001  file found as csv locally. Reading")
+                Census_2001__KS006__Ethnicity <- read.csv(
+                    "Data/Raw/Census_2001__KS006__Ethnicity.csv"
+                )
+                
+                save(
+                    Census_2001__KS006__Ethnicity,
+                    file="Data/RObj/Census_2001__KS006__Ethnicity.RData"
+                )
+            } else {
+                print("2001 file not found locally. Downloading from Dropbox")
+                Census_2001__KS006__Ethnicity <- repmis::source_DropboxData(
+                    file="Census__2001__KS006__Ethnic_Group_And_Language.csv",
+                    key="kfgj930jel9qep0"
+                )
+                
+                write.csv(
+                    Census_2001__KS006__Ethnicity,
+                    file="Data/Raw/Census_2001__KS006__Ethnicity.csv"
+                )
+                save(
+                    Census_2001__KS006__Ethnicity,
+                    file="Data/RObj/Census_2001__KS006__Ethnicity.RData"
+                )
+            }
+        }
+        
+        
     }
+    
+    if ("Religion" %in% Census_Variables){
+        print("Loading Religion Census Variables")
+        # 2011 Table is KS209SCb
+        print("Loading 2011 Census table")
+        if (file.exists("Data/RObj/Census_2011__KS209SCb__Religion.RData")){
+            print("2011 Religion found as R Object. Loading")
+            load("Data/RObj/Census_2011__KS209SCb__Religion.RData")
+            
+        } else {
+            print("2011 file not found as R Object. Looking for local CSV to load")
+            if (file.exists("Data/Raw/Census_2011__KS209SCb__Religion.csv")){
+                print("2011 file found as csv locally. Reading")
+                Census_2011__KS209SCb__Religion <- read.csv(
+                    "Data/Raw/Census_2011__KS209SCb__Religion.csv"
+                )
+                
+                save(
+                    Census_2011__KS209SCb__Religion,
+                    file="Data/RObj/Census_2011__KS209SCb__Religion.RData"
+                )
+            } else {
+                print("2011 file not found locally. Downloading from Dropbox")
+                Census_2011__KS209SCb__Religion <- repmis::source_DropboxData(
+                    file="KS209SCb.csv",
+                    key="aejzg3hbu443pxl"
+                )
+                
+                write.csv(
+                    Census_2011__KS209SCb__Religion,
+                    file="Data/Raw/Census_2011__KS209SCb__Religion.csv"
+                )
+                save(
+                    Census_2011__KS209SCb__Religion,
+                    file="Data/RObj/Census_2011__KS209SCb__Religion.RData"
+                )
+            }
+        }
+        
+        print("Loading 2001 census table")
+        # 2001 Table is KS007
+        url <- "https://www.dropbox.com/s//"
+        if (file.exists("Data/RObj/Census_2001__KS007__Religion.RData")){
+            print("2001 Religion found as R Object. Loading")
+            load("Data/RObj/Census_2001__KS007__Religion.RData")
+            
+        } else {
+            print("2001 file not found as R Object. Looking for local CSV to load")
+            if (file.exists("Data/Raw/Census_2001__KS007__Religion.csv")){
+                print("2001 file found as csv locally. Reading")
+                Census_2001__KS007__Religion <- read.csv(
+                    "Data/Raw/Census_2001__KS007__Religion.csv"
+                )
+                
+                save(
+                    Census_2001__KS007__Religion,
+                    file="Data/RObj/Census_2001__KS007__Religion.RData"
+                )
+            } else {
+                print("2001 file not found locally. Downloading from Dropbox")
+                Census_2001__KS007__Religion <- repmis::source_DropboxData(
+                    file="Census__2001__KS007__Religion.csv",
+                    key="zfnhe8kwxnpupwa"
+                )
+                
+                write.csv(
+                    Census_2001__KS007__Religion,
+                    file="Data/Raw/Census_2001__KS007__Religion.csv"
+                )
+                save(
+                    Census_2001__KS007__Religion,
+                    file="Data/RObj/Census_2001__KS007__Religion.RData"
+                )
+            }
+        }
+        
+    }
+    
     
     print("Fetching 2001 OUtput Area Lookup")
     if (file.exists("Data/RObj/Census_2001_OA_Lookup.RData")){
@@ -388,7 +548,7 @@ if (Use_Census_Variables){
                 file="OUTPUT_AREA_2001_LOOKUP.csv",
                 key="39wszvlpxy4qvpf"
             )
-          
+            
             
             write.csv(
                 Census_2001_OA_Lookup,
@@ -400,7 +560,6 @@ if (Use_Census_Variables){
             )
         }
     }
-    
     
 }
  

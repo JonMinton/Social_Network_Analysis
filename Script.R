@@ -27,6 +27,11 @@ Pathos_Analysis <- T
 Areal_Unit_Conversion <- F
 Aggregate_Census_OA <- T
 Use_Census_Variables <- T
+Census_Variables <- c(
+    "Religion",
+    "Ethnicity",
+    "Country_Of_Origin"
+    )
 
 # Source files
 
