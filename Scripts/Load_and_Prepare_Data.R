@@ -8,7 +8,13 @@
 # Order of checks
 # 1) Has the Robject Data been found?
 # 2) Have the derived R objects Data.E and Data.V been identified?
-# 3) has the CSV dataset Full_Dataset.csv been identified?
+# 3) has the CSV dataset Full_Dataset.csv been identified
+
+########################################################################################################
+########################################################################################################
+############################### N E T W O R K   A N A L Y S I S ########################################
+########################################################################################################
+########################################################################################################
 if (Network_Analysis){
     if (!file.exists("Data/RObj/Network_Data.RData")){
         print("Data not found as R object. Searching for CSV file locally")
@@ -80,9 +86,17 @@ if (Network_Analysis){
     }    
 }
 
+
+############################################################################################################
+############################################################################################################
+################################### P A T H O S   A N A L Y S I S ##########################################
+############################################################################################################
+############################################################################################################
 # Pathos Data from Gwilym
 if (Pathos_Analysis){
-    
+    ########################################################################################################
+    ####################################### P A T H O S ####################################################
+    ########################################################################################################
     print("Looking for Raw(er) Pathos_Data")
     if (!file.exists("Data/RObj/Pathos_Data_Raw.RData")){
         print("Raw Pathos Data not found as R object. Searching for CSV file locally")
@@ -177,7 +191,11 @@ if (Pathos_Analysis){
 
 
 # Check for existence of areal unit conversion file in correct format
-
+##############################################################################################################
+##############################################################################################################
+########################  C E N S U S  -   A R E A L   U N I T   L I N K S ###################################
+##############################################################################################################
+##############################################################################################################
 if (Areal_Unit_Conversion){
     if (!file.exists("Data/Raw/Areal_Unit_Links.csv")){
         # Does the file exist as a csv file?
@@ -291,11 +309,21 @@ if (Aggregate_Census_OA){
     }    
 }
 
+#####################################################################################################
+#####################################################################################################
+############################ C E N S U S   -   V A R I A B L E S ####################################
+#####################################################################################################
+#####################################################################################################
 if (Use_Census_Variables){
     
+    #################################################################################################
+    ############################## C O U N T R Y   O F   O R I G I N ################################
+    #################################################################################################
     if ("Country_Of_Origin" %in% Census_Variables){
         print("Fetching 2011 Country of Origin file")
         
+        ################################### 2011 ####################################################
+        #############################################################################################
         if (file.exists("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")){
             print("2011 Country of Origin found as R Object. Loading")
             load("Data/RObj/Census_2011__KS204SC__Country_Of_Origin.RData")
@@ -318,7 +346,7 @@ if (Use_Census_Variables){
                     file="KS204SC.csv",
                     key="kzliwt4oldfbrxl"
                 )
-                
+                Census_2011__KS204SC__Country_Of_Origin <- Tidy_2011_Census_Table(Census_2011__KS204SC__Country_Of_Origin)
                 write.csv(
                     Census_2011__KS204SC__Country_Of_Origin,
                     file="Data/Raw/Census_2011__KS204SC__Country_Of_Origin.csv"
@@ -330,6 +358,8 @@ if (Use_Census_Variables){
             }
         }
         
+        ####################################### 2001 ####################################################
+        #################################################################################################
         print("Fetching 2001 Country of Origin dataset")
         
         if (file.exists("Data/RObj/Census_2001__KS005__Country_Of_Origin.RData")){
@@ -369,10 +399,15 @@ if (Use_Census_Variables){
            
         
     }
-    
+    #################################################################################################
+    ###################################### E T H N I C I T Y  #######################################
+    #################################################################################################
     if ("Ethnicity" %in% Census_Variables){
         print("Loading Ethnicity Census Variables")
+
         # 2011 Table is KS201SC
+        ############################### 2011 ########################################################
+        #############################################################################################
         print("Loading 2011 Census Table")
         if (file.exists("Data/RObj/Census_2011__KS201SC__Ethnicity.RData")){
             print("2011 Ethnicity found as R Object. Loading")
@@ -385,7 +420,6 @@ if (Use_Census_Variables){
                 Census_2011__KS201SC__Ethnicity <- read.csv(
                     "Data/Raw/Census_2011__KS201SC__Ethnicity.csv"
                 )
-                
                 save(
                     Census_2011__KS201SC__Ethnicity,
                     file="Data/RObj/Census_2011__KS201SC__Ethnicity.RData"
@@ -394,8 +428,11 @@ if (Use_Census_Variables){
                 print("2011 file not found locally. Downloading from Dropbox")
                 Census_2011__KS201SC__Ethnicity <- repmis::source_DropboxData(
                     file="KS201SC.csv",
-                    key="adxgd6edmvgyk82"
+                    key="t4n19qx7kjwas9m"
+
                 )
+                Census_2011__KS201SC__Ethnicity <- Tidy_2011_Census_Table(Census_2011__KS201SC__Ethnicity)
+
                 
                 write.csv(
                     Census_2011__KS201SC__Ethnicity,
@@ -408,6 +445,8 @@ if (Use_Census_Variables){
             }
         }
         
+        ############################### 2001 #########################################################
+        ##############################################################################################
         print("Loading 2001 Census Table")
         # 2001 Table is KS006
         if (file.exists("Data/RObj/Census_2001__KS006__Ethnicity.RData")){
@@ -446,10 +485,15 @@ if (Use_Census_Variables){
         
         
     }
-    
+    #################################################################################################
+    ###################################### R E L I G I O N   ########################################
+    #################################################################################################    
     if ("Religion" %in% Census_Variables){
         print("Loading Religion Census Variables")
         # 2011 Table is KS209SCb
+        
+        ############################### 2011 ########################################################
+        #############################################################################################
         print("Loading 2011 Census table")
         if (file.exists("Data/RObj/Census_2011__KS209SCb__Religion.RData")){
             print("2011 Religion found as R Object. Loading")
@@ -463,6 +507,7 @@ if (Use_Census_Variables){
                     "Data/Raw/Census_2011__KS209SCb__Religion.csv"
                 )
                 
+                
                 save(
                     Census_2011__KS209SCb__Religion,
                     file="Data/RObj/Census_2011__KS209SCb__Religion.RData"
@@ -471,13 +516,17 @@ if (Use_Census_Variables){
                 print("2011 file not found locally. Downloading from Dropbox")
                 Census_2011__KS209SCb__Religion <- repmis::source_DropboxData(
                     file="KS209SCb.csv",
-                    key="aejzg3hbu443pxl"
+                    key="fr03pw7x7fcawkh"
                 )
+
+                Census_2011__KS209SCb__Religion <- Tidy_2011_Census_Table(Census_2011__KS209SCb__Religion)
+                
                 
                 write.csv(
                     Census_2011__KS209SCb__Religion,
                     file="Data/Raw/Census_2011__KS209SCb__Religion.csv"
                 )
+                
                 save(
                     Census_2011__KS209SCb__Religion,
                     file="Data/RObj/Census_2011__KS209SCb__Religion.RData"
@@ -485,6 +534,8 @@ if (Use_Census_Variables){
             }
         }
         
+        ############################### 2001 ########################################################
+        #############################################################################################
         print("Loading 2001 census table")
         # 2001 Table is KS007
         url <- "https://www.dropbox.com/s//"
@@ -523,7 +574,10 @@ if (Use_Census_Variables){
         }
         
     }
-    
+
+    #############################################################################################
+    ################################ C O M M O N ################################################
+    #############################################################################################    
     
     print("Fetching 2001 OUtput Area Lookup")
     if (file.exists("Data/RObj/Census_2001_OA_Lookup.RData")){
@@ -549,7 +603,6 @@ if (Use_Census_Variables){
                 key="39wszvlpxy4qvpf"
             )
             
-            
             write.csv(
                 Census_2001_OA_Lookup,
                 file="Data/Raw/Census_2001_OA_Lookup.csv"
@@ -560,6 +613,8 @@ if (Use_Census_Variables){
             )
         }
     }
-    
 }
+
+rm(tmp, url)
+
  

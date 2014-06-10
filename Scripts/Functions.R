@@ -153,6 +153,86 @@ Make_CPEP_Binary <- function(
 # returns string w/o leading or trailing whitespace
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
+Tidy_2011_Census_Table <- function(input){
+    x1 <- input[,1]
+    x2 <- input[,-1]
+    
+    
+    x2 <- apply(
+        x2,
+        2,
+        function(x) {
+            out <- x
+            out <- as.character(out)
+            out <- sub(",", "", out)
+            out <- sub("-", "0", out)
+            out <- as.numeric(out)
+            return(out)
+        }
+    )
+    output <- data.frame(x1, x2)
+    output <- output[-1,]
+    
+    return(output)
+}
 
 
+#########################################################################################################
+################## FUNCTION FOR MANAGING LONG LINKS BETWEEN TABLES ######################################
+#########################################################################################################
+
+Long_Merge <- function(
+    Origin,
+    Links,    
+    Target
+    ){
+    # Origin is a list containing:
+    #   1) DF
+    #   2) Link.out
+    
+    # Links is a list of length according to number of intermediate links, each element containing:
+    # 1 ) Link.in
+    # 2 ) Link.out
+    
+    # Target is a list containing:
+    #   1) DF
+    #   2) Link.in
+    
+    Output <- Origin[["DF"]]
+    
+    Output <- merge(
+        x= Output,
+        y=Links[[1]][["DF"]],
+        
+        by.x=Origin[["Link.out"]],
+        by.y=Links[[1]][["Link.in"]],
+        all=F
+        )
+    
+    N.links <- length(Links)
+    
+    if (N.links > 1){
+        for (i in 2:N.links){
+            Output <- merge(
+                x=Output,
+                y=Links[[i]][["DF"]],
+                by.x=Links[[i-1]][["Link.out"]],
+                by.y=Links[[i]][["Link.in"]],
+                all=F
+            )
+            if (dim(Output)[1]==0) stop("Link Broken")
+        }        
+    }
+    
+    
+    Output <- merge(
+        x=Output,
+        y=Target[["DF"]],
+        
+        by.x=Links[[N.links]][["Link.out"]],
+        by.y=Target[["Link.in"]]
+        )
+    
+    return(Output)
+}
 
