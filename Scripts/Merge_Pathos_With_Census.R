@@ -6,6 +6,18 @@
 #       with
 #   Census_2011_Lookup__OA_TO_HIGHER_AREAS
 
+
+## Stages for each variable
+
+# 1 ) Merge 2001 and 2011 tables independently to Pathos_Raw
+# 2 ) Drop unused variables
+# 3 ) rename 2001 and 2011 variables for consistently
+# 4 ) merge 2001 and 2011 tables
+# 5 ) create 'dif' variables
+
+
+
+
 if ("Country_Of_Origin" %in% Census_Variables){
     print("Finding or reconstructing Country_of_Origin merged file")
 
@@ -14,11 +26,16 @@ if ("Country_Of_Origin" %in% Census_Variables){
         if (!file.exists("Data/Raw/Pathos_Origin.csv")){
             print("Cannot find as csv. Creating from other data sources")
             
+            # 1 ) Merge 2001 and 2011 tables independently to Pathos_Raw [DONE]
+            # 2 ) Drop unused variables
+            # 3 ) rename 2001 and 2011 variables for consistently
+            # 4 ) merge 2001 and 2011 tables
+            # 5 ) create 'dif' variables
             
             #########################################################################################################
             debug(Long_Merge)
             
-            Pathos_Country_Of_Origin_Merged.2001 <- Long_Merge(
+            Pathos_COO.2001 <- Long_Merge(
                 Origin= list(
                     DF=Pathos_Data,
                     Link.out="intermed"
@@ -42,7 +59,7 @@ if ("Country_Of_Origin" %in% Census_Variables){
                 )
             )
             
-            Pathos_Country_Of_Origin_Merged.2011 <- Long_Merge(
+            Pathos_COO.2011 <- Long_Merge(
                 Origin= list(
                     DF=Pathos_Data,
                     Link.out="intermed"
@@ -61,130 +78,80 @@ if ("Country_Of_Origin" %in% Census_Variables){
             )
             
             
-            # To do: merge and format to create diff
+            # 2 ) Drop unused variables
             
-            
-                # Origin is a list containing:
-                #   1) DF
-                #   2) Link.out
-                
-                # Links is a list of length according to number of intermediate links, each element containing:
-                # 1 ) Link.in
-                # 2 ) Link.out
-                
-                # Target is a list containing:
-                #   1) DF
-                #   2) Link.in
-            
-            
-            
-            
-            y.ss <- subset(
-                Census_2011_Lookup__OA_TO_HIGHER_AREAS,
+            Pathos_COO.2001 <- subset(
+                Pathos_COO.2001,
                 select=c(
-                    "OutputArea2011Code",
-                    "IntermediateZone2001Code",
-                    "MasterPostcode"
+                    "intermed",
+                    "Type_I_p_all_CY2001"
+                    "Type_II_p_all_CY2001",
+                    "Type_III_p_all_CY2001",
+                    "Type_IV_p_all_CY2001",
+                    "Type_All_p_all_CY2001",
+                    "Type_CORE_p_all_CY2001",
+                    "n_CY2001",
+                    "All_People",
+                    "England",
+                    "Scotland",
+                    "Wales",
+                    "Northern_Ireland",
+                    "Rep_Ireland"
+                    "Other_EU",
+                    "Elsewhere"
+                    )
                 )
-            )
             
-            x1 <- Census_2011__KS204SC__Country_Of_Origin
-            
-            x2 <- merge(
-                x=x1,
-                y=y.ss,
-                
-                by.x="X",
-                by.y="OutputArea2011Code",
-                all=F
-            )
-            
-            y.2011 <- subset(Data_Long, year==2011)
-            
-            x3 <- merge(
-                x=x2,
-                y=y.2011,
-                by.x="IntermediateZone2001Code",
-                by.y="intermed",
-                all=F
-            )
-            
-            merged.2011 <- x3
-            
-            merged.2011 <- merged.2011[!is.na(merged.2011$value),]
+            Pathos_COO.2001 <- plyr::rename(
+                Pathos_COO.2001,
+                replace=c(
+                    "Type_I_p_all_CY2001"="pathos_i",
+                    "Type_II_p_all_CY2001"="pathos_ii",
+                    "Type_III_p_all_CY2001"="pathos_iii",
+                    "Type_IV_p_all_CY2001",
+                    "Type_All_p_all_CY2001",##### CONTINUE WORK HERE
+                    "Type_CORE_p_all_CY2001",
+                    "n_CY2001",
+                    "All_People"="all_people",
+                    "England"="england",
+                    "Northern_Ireland"="northern_ireland",
+                    "Scotland"="scotland",
+                    "Rep_Ireland"="republic_of_ireland",
+                    "Other_EU"="other_eu",
+                    "Elsewhere"="elsewhere"
+                    )
+                )
             
             
             
-            #Pathos_Data::Pathos.vars
-            #Pathos_Data::intermed [A]
-            
-            #Census_2011_Lookup_OA_TO_HIGHER_AREAS::IntermediateZone2001Code [A]
-            #Census_2011_Lookup_OA_TO_HIGHER_AREAS::OutputArea2001Code [B]
-            
-            #Census_2001_OA_Lookup::OutputArea2001Code [B]
-            #Census_2001_OA_Lookup::NRSoldOutputArea2001Code [C]
-            
-            #Census_2001_Table:: 
-            
-            # Pathos_Data
-            #  : intermed [A]
-            
-            # Census_2011_Lookup_OA_TO_HIGHER_AREAS
-            #  : OutputArea2011Code
-            #  : OutputArea2001Code [B]
-            #  : IntermediateZone2001Code [A]
-            
-            # Census_2001_OA_Lookup
-            #   : OutputArea2001Code [B]
-            #   : NRSoldOutputArea2001Code [C]
-            
-            
-            y1 <- subset(
-                Census_2011_Lookup__OA_TO_HIGHER_AREAS,
+            Pathos_COO.2011 <- subset(
+                Pathos_COO.2011,
                 select=c(
-                    "OutputArea2011Code",
-                    "OutputArea2001Code",
-                    "IntermediateZone2001Code"
+                    "intermed",
+                    "Type_I_p_all_CY2011",
+                    "Type_II_p_all_CY2011",
+                    "Type_III_p_all_CY2011",
+                    "Type_IV_p_all_CY2011",
+                    "Type_All_p_all_CY2011",
+                    "Type_CORE_p_all_CY2011",
+                    "n_CY2011",
+                    "All.people",
+                    "England",
+                    "Northern.Ireland",
+                    "Scotland",
+                    "Wales",
+                    "Republic.of.Ireland",
+                    "Other.EU..Member.countries.in.March.2001..1.",
+                    "Other.EU..Accession.countries.April.2001.to.March.2011",
+                    "Other.countries"
+                    )
                 )
-            )
-            
-            x.2001 <- subset(Data_Long, year==2001)
-            
-            x2 <- merge(
-                x=x.2001,
-                y=y1,
-                
-                by.x="intermed",
-                by.y="IntermediateZone2001Code",
-                all=F
-            )
+            # 3 ) rename 2001 and 2011 variables for consistently
+            # 4 ) merge 2001 and 2011 tables
+            # 5 ) create 'dif' variables
             
 
-            
-            x3 <- merge(
-                x=x2,
-                y=Census_2001_OA_Lookup,
-                
-                by="OutputArea2001Code",
-                all=F
-            )
-            
-            
-           
-            
-            x4 <- merge(
-                x=x3, 
-                y=Census_2001__KS005__Country_Of_Origin,
-                
-                by.x="NRSoldOutputArea2001Code",
-                by.y="Zone.Code",
-                all=F
-            )
-            
-            merged.2001 <- x4
-            rm(x1, x2, x3, x4, x.2001, y.2011, y1, y.ss)
-            
-            
+        
             ###############################
             
             merged.2001.backup <- merged.2001
