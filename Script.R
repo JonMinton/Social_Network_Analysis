@@ -123,7 +123,7 @@ if (Pathos_Analysis){
     d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion Scottish")
     print(d3)
     dev.off()
-    
+    §
     
     # Try again removing 0 values as if not real
     
