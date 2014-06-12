@@ -85,6 +85,7 @@ if ("Country_Of_Origin" %in% Census_Variables){
                 select=c(
                     "intermed",
                     "Type_I_p_all_CY2001",
+
                     "Type_II_p_all_CY2001",
                     "Type_III_p_all_CY2001",
                     "Type_IV_p_all_CY2001",
@@ -97,6 +98,7 @@ if ("Country_Of_Origin" %in% Census_Variables){
                     "Wales",
                     "Northern_Ireland",
                     "Rep_Ireland",
+
                     "Other_EU",
                     "Elsewhere"
                     )
@@ -108,10 +110,12 @@ if ("Country_Of_Origin" %in% Census_Variables){
                     "Type_I_p_all_CY2001"="pathos_i",
                     "Type_II_p_all_CY2001"="pathos_ii",
                     "Type_III_p_all_CY2001"="pathos_iii",
+
                     "Type_IV_p_all_CY2001" ="pathos_iv",
                     "Type_All_p_all_CY2001"="pathos_all",
                     "Type_CORE_p_all_CY2001"="pathos_core",
                     "n_CY2001"="pathos.n",
+
                     "All_People"="all_people",
                     "England"="england",
                     "Northern_Ireland"="northern_ireland",
@@ -121,6 +125,7 @@ if ("Country_Of_Origin" %in% Census_Variables){
                     "Elsewhere"="elsewhere"
                     )
                 )
+
             Pathos_COO.2001 <- data.frame(Pathos_COO.2001, year=2001)
                 
             ###########
@@ -184,6 +189,9 @@ if ("Country_Of_Origin" %in% Census_Variables){
             Pathos_COO.2011 <- data.frame(
                 Pathos_COO.2011, year=2011
                 )
+ 
+            
+
             # 3 ) rename 2001 and 2011 variables for consistently
             # 4 ) merge 2001 and 2011 tables
             # 5 ) create 'dif' variables
@@ -499,6 +507,7 @@ if ("Ethnicity" %in% Census_Variables){
         if (!file.exists("Data/Raw/Pathos_Ethnicity.csv")){
             print("Cannot find as csv. Creating from other data sources")
             
+<<<<<<< HEAD
             Pathos_Eth.2001 <- Long_Merge(
                 Origin=list(
                     DF=Pathos_Data,
@@ -526,6 +535,7 @@ if ("Ethnicity" %in% Census_Variables){
             
 
             Pathos_Eth.2011 <- Long_Merge(
+
                 Origin=list(
                     DF=Pathos_Data,
                     Link.out="intermed"
@@ -535,6 +545,7 @@ if ("Ethnicity" %in% Census_Variables){
                     A=list(
                         DF=Census_2011_Lookup__OA_TO_HIGHER_AREAS,
                         Link.in="IntermediateZone2001Code",
+
                         Link.out="OutputArea2011Code"
                     )
                 ),
@@ -697,6 +708,7 @@ if ("Ethnicity" %in% Census_Variables){
             
             Pathos_Eth.2001 <- cbind(Pathos_Eth.2001, year=2001)
             Pathos_Eth.2011 <- cbind(Pathos_Eth.2011, year=2011)
+
             
             
             #####################################################

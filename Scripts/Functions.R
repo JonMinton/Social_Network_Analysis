@@ -186,6 +186,7 @@ Long_Merge <- function(
     Links,    
     Target,
     all_opt=T
+
     ){
     # Origin is a list containing:
     #   1) DF
@@ -208,6 +209,7 @@ Long_Merge <- function(
         by.x=Origin[["Link.out"]],
         by.y=Links[[1]][["Link.in"]],
         all=all_opt
+
         )
     
     N.links <- length(Links)
@@ -220,6 +222,7 @@ Long_Merge <- function(
                 by.x=Links[[i-1]][["Link.out"]],
                 by.y=Links[[i]][["Link.in"]],
                 all=all_opt
+
             )
             if (dim(Output)[1]==0) stop("Link Broken")
         }        
