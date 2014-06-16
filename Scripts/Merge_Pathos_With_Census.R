@@ -15,9 +15,423 @@
 # 4 ) merge 2001 and 2011 tables
 # 5 ) create 'dif' variables
 
+# On branch aggmerge: want to approach merging a different way, with aggregating at an earlier stage
+
+# What data are really needed?
+
+# OA_t1 to demographic [A]
+# OA_t2 to demographic [B]
+
+# Pathos to Inter [C]
+# Inter to OA_t2 [D]
+# OA_t1 to OA_t2 [E]
+
+area_links <- Census_2011_Lookup__OA_TO_HIGHER_AREAS
+
+area_links <- subset(
+    area_links,
+    select=c(
+        "OutputArea2011Code",
+        "IntermediateZone2001Code",
+        "OutputArea2001Code"
+        )
+    )
+
+c2011_ethnicity <- Census_2011__KS201SC__Ethnicity
+
+m1 <- merge(
+    x=c2011_ethnicity,
+    y=area_links,
+    by.x="x1",
+    by.y="OutputArea2011Code",
+    all.x=T,
+    all.y=F
+    )
+
+m2 <- gdata::remove.vars(
+    m1,
+    names=c(
+        "OutputArea2001Code",
+        "x1"
+        )
+    )
+
+
+# melt it 
+
+m3 <- reshape2::melt(
+    m2,
+    id.var="IntermediateZone2001Code"
+    )
+
+m4 <- cast(
+    m3,
+    IntermediateZone2001Code ~ variable,
+    sum
+    )
+
+m5 <- cbind(m4, year=2011, demog="ethnicity")
+m6 <- melt(
+    m5, 
+    id.var=c(
+        "IntermediateZone2001Code",
+        "year",
+        "demog"
+    )
+)
+
+c2011_ethnicity_long <- m6
+
+rm(list=ls(pattern="^m[[:digit:]]{1}"))
+
+
+############
+c2011_religion <- Census_2011__KS209SCb__Religion
 
 
 
+m1 <- merge(
+    x=c2011_religion,
+    y=area_links,
+    by.x="x1",
+    by.y="OutputArea2011Code",
+    all.x=T,
+    all.y=F
+)
+
+m2 <- gdata::remove.vars(
+    m1,
+    names=c(
+        "OutputArea2001Code",
+        "x1"
+    )
+)
+
+
+# melt it 
+
+m3 <- reshape2::melt(
+    m2,
+    id.var="IntermediateZone2001Code"
+)
+
+m4 <- cast(
+    m3,
+    IntermediateZone2001Code ~ variable,
+    sum
+)
+
+m5 <- cbind(m4, year=2011, demog="religion")
+m6 <- melt(
+    m5, 
+    id.var=c(
+        "IntermediateZone2001Code",
+        "year",
+        "demog"
+    )
+)
+
+c2011_religion_long <- m6
+c2011_long <- rbind(
+    c2011_ethnicity_long,
+    c2011_religion_long
+    )
+rm(list=ls(pattern="^m[[:digit:]]{1}"))
+########
+# Now for country of origin
+
+c2011_coo <- Census_2011__KS204SC__Country_Of_Origin
+# Now to do the same for country of origin and religion
+
+
+
+
+m1 <- merge(
+    x=c2011_coo,
+    y=area_links,
+    by.x="x1",
+    by.y="OutputArea2011Code",
+    all.x=T,
+    all.y=F
+)
+
+m2 <- gdata::remove.vars(
+    m1,
+    names=c(
+        "OutputArea2001Code",
+        "x1"
+    )
+)
+
+
+# melt it 
+
+m3 <- reshape2::melt(
+    m2,
+    id.var="IntermediateZone2001Code"
+)
+
+m4 <- cast(
+    m3,
+    IntermediateZone2001Code ~ variable,
+    sum
+)
+
+m5 <- cbind(m4, year=2011, demog="coo")
+m6 <- melt(
+    m5, 
+    id.var=c(
+        "IntermediateZone2001Code",
+        "year",
+        "demog"
+    )
+)
+
+c2011_coo_long <- m6
+
+
+c2011_long <- rbind(
+    c2011_long,
+    c2011_coo_long
+)
+
+
+
+rm(list=ls(pattern="^m[[:digit:]]{1}"))
+
+
+
+# Now to do the same but with 2001 data
+# (An extra link needed)
+
+#
+area_links <- Census_2011_Lookup__OA_TO_HIGHER_AREAS
+
+area_links <- subset(
+    area_links,
+    select=c(
+        "OutputArea2011Code",
+        "IntermediateZone2001Code",
+        "OutputArea2001Code"
+    )
+)
+
+areal_links <- merge(
+    area_links,
+    Census_2001_OA_Lookup,
+    by="OutputArea2001Code",
+    all.x=T,
+    all.y=F
+    )
+
+
+
+c2001_ethnicity <- Census_2001__KS006__Ethnicity
+
+
+
+m1 <- merge(
+    x=c2001_ethnicity,
+    y=areal_links,
+    by.x="Zone.Code",
+    by.y="NRSoldOutputArea2001Code",
+    all.x=T,
+    all.y=F
+)
+has.intermed <- which(!is.na(m1$IntermediateZone2001Code))
+m2 <- m1[has.intermed,]
+
+
+m3 <- gdata::remove.vars(
+    m2,
+    names=c(
+        "OutputArea2001Code",
+        "OutputArea2011Code",
+        "Zone.Code"
+    )
+)
+
+# melt it 
+
+m4 <- reshape2::melt(
+    m3,
+    id.var="IntermediateZone2001Code"
+)
+
+m5 <- cast(
+    m4,
+    IntermediateZone2001Code ~ variable,
+    sum
+)
+
+m6 <- cbind(m5, year=2001, demog="ethnicity")
+m7 <- melt(
+    m6, 
+    id.var=c(
+        "IntermediateZone2001Code",
+        "year",
+        "demog"
+    )
+)
+
+c2001_ethnicity_long <- m7
+
+rm(list=ls(pattern="^m[[:digit:]]{1}"))
+
+######
+
+
+# Now religion:
+
+
+c2001_religion<- Census_2001__KS007__Religion
+
+
+
+m1 <- merge(
+    x=c2001_religion,
+    y=areal_links,
+    by.x="Zone.Code",
+    by.y="NRSoldOutputArea2001Code",
+    all.x=T,
+    all.y=F
+)
+
+has.intermed <- which(!is.na(m1$IntermediateZone2001Code))
+m2 <- m1[has.intermed,]
+
+
+m3 <- gdata::remove.vars(
+    m2,
+    names=c(
+        "OutputArea2001Code",
+        "OutputArea2011Code",
+        "Zone.Code"
+    )
+)
+
+# melt it 
+
+m4 <- reshape2::melt(
+    m3,
+    id.var="IntermediateZone2001Code"
+)
+
+m5 <- cast(
+    m4,
+    IntermediateZone2001Code ~ variable,
+    sum
+)
+
+m6 <- cbind(m5, year=2001, demog="religion")
+
+m7 <- melt(
+    m6, 
+    id.var=c(
+        "IntermediateZone2001Code",
+        "year",
+        "demog"
+    )
+)
+
+c2001_religion_long <- m7
+
+rm(list=ls(pattern="^m[[:digit:]]{1}"))
+
+c2001_long <- rbind(
+    c2001_religion_long,
+    c2001_ethnicity_long
+    )
+
+## now country of origin:
+
+# Now religion:
+
+
+c2001_coo<- Census_2001__KS005__Country_Of_Origin
+
+
+
+m1 <- merge(
+    x=c2001_coo,
+    y=areal_links,
+    by.x="Zone.Code",
+    by.y="NRSoldOutputArea2001Code",
+    all.x=T,
+    all.y=F
+)
+
+has.intermed <- which(!is.na(m1$IntermediateZone2001Code))
+m2 <- m1[has.intermed,]
+
+
+m3 <- gdata::remove.vars(
+    m2,
+    names=c(
+        "OutputArea2001Code",
+        "OutputArea2011Code",
+        "Zone.Code"
+    )
+)
+
+# melt it 
+
+m4 <- reshape2::melt(
+    m3,
+    id.var="IntermediateZone2001Code"
+)
+
+m5 <- cast(
+    m4,
+    IntermediateZone2001Code ~ variable,
+    sum
+)
+
+m6 <- cbind(m5, year=2001, demog="coo")
+
+m7 <- melt(
+    m6, 
+    id.var=c(
+        "IntermediateZone2001Code",
+        "year",
+        "demog"
+    )
+)
+
+c2001_coo_long <- m7
+
+rm(list=ls(pattern="^m[[:digit:]]{1}"))
+
+c2001_long <- rbind(
+    c2001_long,
+    c2001_coo_long
+)
+
+c_long <- rbind(
+    c2001_long,
+    c2011_long
+    )
+
+# c_long is the data we want, but the variable names need to be tidied
+
+# TO DO: TIDY VARIABLE NAMES
+
+####################
+# Now to tidy pathos data too
+
+m1 <- Pathos_Data
+
+m2 <- gdata::remove.vars(
+    m1,
+    names="X_merge"
+    )
+
+m3 <- melt(
+    m2,
+    id.vars="intermed"
+    )
+
+###############################################################################################################
 if ("Country_Of_Origin" %in% Census_Variables){
     print("Finding or reconstructing Country_of_Origin merged file")
 
