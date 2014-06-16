@@ -17,6 +17,7 @@ require(foreign)
 require(xtable)
 require(corrgram)
 require(gdata)
+require(car)
 
 
 
