@@ -15,13 +15,13 @@ require(reshape)
 require(ggplot2)
 require(foreign)
 require(xtable)
-require(corrgram)
+require(ellipse)
 require(gdata)
 require(car)
 
 
 
-# Global variables
+# Flags
 
 Complete_Only <- T # Should only complete data be used? 
 Network_Analysis <- F
@@ -41,415 +41,420 @@ source("Scripts/Functions.R")
 
 source("Scripts/Load_and_Prepare_Data.R")
 
+
+
 if (Network_Analysis){
     source("Scripts/Create_Networks.R")
     source("Scripts/Analyse_Networks.R")
 }
 
+source("Scripts/Make_Census_Pathos_Data_Tidy.R")
 
-if (Pathos_Analysis){
-    
-# Do stuff here    
-    source("Scripts/Make_Long_Format_Pathos_Data.R")
-    
-    if (!exists("Pathos_Demos")){
-        print("Cannot Find Pathos_Demos data as RObject. Seeking")
-        source("Scripts/Merge_Pathos_With_Census.R")
+
+################################################################################
+###### Work with pathos_tidy and census_tidy####################################
+################################################################################
+
+pathos_missing <- pathos_tidy
+pathos_missing[,c("all", "core", "i", "ii", "iii", "iv")] <- apply(
+    pathos_missing[,c("all", "core", "i", "ii" ,"iii", "iv")], 
+    2, 
+    function(x) {
+        out <- x
+        out[x==0] <- NA
+        return(out)
     }
-    
-    # ggplot of change in Pathos with change in proportion_Scottish
-    
-    tmp <- subset(
-        Pathos_Demos, 
-        subset=year=="dif"          
-                  )
-    tmp2 <- subset(
-        Pathos_Demos,
-        subset=year=="2001"
     )
-    
-    tmp3 <- plyr::rename(
-        tmp2,
-        c(
-            "proportion_Scottish" = "orig_prop_Scottish",
-            "proportion_English"= "orig_prop_English",
-            "proportion_Other_EU" = "orig_prop_Other_EU",
-            "proportion_Elsewhere" = "orig_prop_Elsewhere"
-            )
-        )
-    
-    tmp4 <- gdata::remove.vars(
-        tmp3,
-        names=c(
-            "Total",
-            "England",
-            "Scotland",
-            "Wales",
-            "Northern_Ireland",
-            "Republic_of_Ireland",
-            "Other_EU",
-            "Elsewhere",
-            "year",
-            "variable",
-            "value"
-            )
-        )
-    
-    tmp2a <- gdata::remove.vars(
-        tmp,
-        names=c(
-            "year"
-            )
-        )
-    
-    tmp5 <- merge(
-        x=tmp2a,
-        y=tmp4,
-        by="intermed",
-        all.x=T,
-        all.y=F
-        )
-    
 
-    png("Figures/Lattice_Change_Pathos_Change_Prop_Scottish.png", width=1200, height=800)
-    d <- ggplot(
-        tmp5,
-        aes(
-            x=value,
-            y=proportion_Scottish,
-            colour=orig_prop_Scottish
+pathos_missing_diffs <- ddply(
+    pathos_missing,
+    .(intermed),
+    summarise,
+    all=all[year==2011] - all[year==2001],
+    core=core[year==2011] - core[year==2001],
+    i=i[year==2011] - i[year==2001],
+    ii=ii[year==2011] - ii[year==2001],
+    iii=iii[year==2011] - iii[year==2001],
+    iv = iv[year==2011] - iv[year==2001],
+    n = n[year==2001] + n[year==2011]
+    )
+
+pathos_missing_diffs <- data.frame(intermed=pathos_missing_diffs[,1], year="diff", pathos_missing_diffs[,-1])
+
+
+########### FIRST IMPORTANT VARIABLE TO MERGE
+pathos_missing <- rbind(pathos_missing, pathos_missing_diffs)
+
+## The following code estimates proportions in 2001 and 2011 
+# of each ethnicity, religion and country of origin
+
+f1 <- function(x){
+    x <- remove.vars(x, names=c("year", "demog"), info=F)
+    dwide  <- cast(x, intermed ~ variable)
+    totals <- dwide$total
+    intermed <- dwide$intermed
+    valmat <- remove.vars(dwide, names=c("total", "intermed"), info=F)
+    out <- sweep(valmat, 1, totals, "/")
+    out <- data.frame(intermed=intermed, out)
+    return(out)
+}
+
+
+census_demos <- dlply(
+    census_tidy,
+    .(demog, year),
+    f1
+    )
+
+
+
+# I want to merge each of the objects in census_demos with pathos_missing_diffs
+
+f2 <- function(x){
+    out <- merge(
+        x=x,
+        y=pathos_missing_diffs,
+        by="intermed", 
+        all.y=T,
+        all.x=F
         )
+    return(out)
+}
+
+census_demos_merged <- llply(
+    census_demos,
+    f2
     )
-    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
-    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion Scottish")
-    print(d3)
-    dev.off()
-    §
-    
-    # Try again removing 0 values as if not real
-    
-    tmp6 <- subset(
-        tmp5, 
-        subset=value!=0
-        )
-    
-    png("Figures/Lattice_Change_Pathos_Change_Prop_Scottish__No_Miss.png", width=1200, height=800)
-    d <- ggplot(
-        tmp6,
-        aes(
-            x=value,
-            y=proportion_Scottish,
-            colour=orig_prop_Scottish
-        )
+
+
+# do the above, but only keep rows with observations > 10? 
+f3 <- function(x){
+    out <- x[x$n >= 10,]
+    return(out)
+}
+
+census_demos_merged_n <- llply(
+    census_demos_merged,
+    f3
     )
-    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
-    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion Scottish")
-    d4 <- d3 + guides(
-        colour=guide_colourbar(title="Original\nProportion\nScottish")
-    )
-    
-    print(d4)
-    dev.off()
-    
-    
-    ###########
-    png("Figures/Lattice_Change_Pathos_Change_Prop_English__No_Miss.png", width=1200, height=800)
-    d <- ggplot(
-        tmp6,
-        aes(
-            x=value,
-            y=proportion_English,
-            colour=orig_prop_English
-        )
-    )
-    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
-    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion English")
-    d4 <- d3 + guides(
-        colour=guide_colourbar(title="Original\nProportion\nEnglish")
-    )
-    
-    print(d4)
-    dev.off()
-    
-    
-    ###########
-    png("Figures/Lattice_Change_Pathos_Change_Prop_Outside__No_Miss.png", width=1200, height=800)
-    d <- ggplot(
-        tmp6,
-        aes(
-            x=value,
-            y=proportion_Elsewhere,
-            colour=orig_prop_Elsewhere
-        )
-    )
-    d2 <- d + geom_point() + facet_wrap(~ variable, nrow=2)
-    d3 <- d2 + labs(x="Pathos Value", y="Change in Proportion from Outside of EU")
-    d4 <- d3 + guides(
-        colour=guide_colourbar(title="Original Proportion\nOutside of EU")
+
+
+###
+f5 <- function(x){
+    x <- remove.vars(x, names=c("year"), info=F)
+    dwide  <- cast(x, intermed ~ variable)
+    totals <- dwide$total
+    intermed <- dwide$intermed
+    valmat <- remove.vars(dwide, names=c("total", "intermed"), info=F)
+    out <- sweep(valmat, 1, totals, "/")
+    out <- data.frame(intermed=intermed, out)
+    return(out)
+}
+
+
+census_demos <- dlply(
+    census_tidy,
+    .(demog, year),
+    f1
+)
+
+## Want to look at differences in demography from 2001 to 2011
+# using data in long format
+# by intermed and variable
+# find 2011 value and 2001 value
+# if either is NA, return NA
+# otherwise return difference
+
+# First I want the proportion data to be in long format again
+
+
+names_cd.jj <- names(census_demos)
+
+census_p_long <- ldply(
+    census_demos,
+    melt,
+    id="intermed"
     )
     
-    print(d4)
-    dev.off()
-    
-    
-    ##############################
-    
-    
-    # [] merge with census data on ethnic change/country of origin to see if changes in pathos correlate with changes in neighbourhood mix
-    Mod_Fun <- function(df){
-        df
-        lm(value ~ proportion_Scottish + proportion_English, data=df)
+f6 <- function(x){
+    if (dim(x)[1]==2){
+        v2 <- x$value[x$year==2011]
+        v1 <- x$value[x$year==2001]
+        
+        vd <- v2 - v1
+        
+        df <- x[1,]
+        df$year <- "diff"
+        df$value <- vd   
+        out <- df
+    } else {
+        out <- NULL
     }
-    
-    models <- dlply(Pathos_Demos, .(year, variable), Mod_Fun)
-    
-    sink("Text_Outputs/Regression_Model_Inputs_01.txt")
-    llply(models, summary)
-    sink()    
-    
-    # [] test whether neighbourhood mix is a factor in explaining social network links (i.e. homophily in language networks)
-
-    
-    
+    return(out)
 }
 
 
 
-########### Do Analysis  on Pathos_Demos
-
-
-
-# impora
-# Census_2001__KS005__Country_Of_Origin
-#   : Zone.Code [C]
-
-##############################################################################
-## Correlations
-
-tmp <- subset(
-    Data_Long,
-    subset=year==2001
+census_p_diff_long <- ddply(
+    census_p_long,
+    .(demog, intermed, variable),
+    f6
     )
-tmp2 <- tmp[,3:4]
-tmp3 <- unstack(tmp2, value ~ variable)
 
-print.xtable(    
-    xtable(
-        cor(tmp3),
-        caption="Correlation between pathos types in 2001",
-        digits=2
-    ),
-    type="html", 
-    file="Tables/Pathos_Correlations_2001.html",
-    caption.placement="top"
+#### Second important variable to merge
+census_p_all_long <- rbind(census_p_long, census_p_diff_long)
+
+
+pathos_demos <- merge(
+    x=census_p_all_long,
+    y=pathos_missing,
+    by=union("intermed", "year"),
+    all.y=T,
+    all.x=F
+    )
+
+# Now to remove rows where the values are < 10 
+
+pathos_demos_bign <- pathos_demos[pathos_demos$n >= 10,]
+
+pathos_demos.list_by_year <- dlply(
+    pathos_demos_bign,
+    .(year)
+    )
+
+##################################################################################################
+pathos_demos_difs <- subset(
+    pathos_demos_bign,
+    subset=year=="diff"
+    )
+# remove missing values
+
+is.missing <- is.na(pathos_demos_difs$value)
+
+pathos_demos_difs <- pathos_demos_difs[!is.missing,]
+
+# Split this up by demographic type
+
+pathos_demos_difs_list <- dlply(pathos_demos_difs,
+                                .(demog)
+                                )
+
+##################################################################################################
+pathos_demos_difs <- subset(
+    pathos_demos_bign,
+    subset=year=="diff"
+)
+# remove missing values
+is.missing <- is.na(pathos_demos_difs$value)
+pathos_demos_difs <- pathos_demos_difs[!is.missing,]
+head(pathos_demos_difs)
+dim(pathos_demos_difs)
+pathos_demos_difs_list <- dlply(
+    pathos_demos_difs,
+    .(demog)
 )
 
-png("Figures/Pathos_Correlations_2001.png", 600, 600)
-corrgram(tmp3, upper.panel=NULL, main="\nCorrelation between pathos types\n2001")
+pathos_demos_difs_list[[1]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
+
+png("Figures/Corrgram_d_rel_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between changes in religion and changes in pathos",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+    )
+
+dev.off()
+
+####
+pathos_demos_difs_list[[2]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
+
+
+png("Figures/Corrgram_d_eth_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between changes in ethnicity and changes in pathos",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
+dev.off()
+
+##################
+
+pathos_demos_difs_list[[3]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
+
+
+png("Figures/Corrgram_d_coo_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between changes in country of origin and changes in pathos",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
 dev.off()
 
 
-tmp <- subset(
-    Data_Long,
-    subset=year==2011
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+pathos_demos_difs <- subset(
+    pathos_demos_bign,
+    subset=year=="2001"
 )
-tmp2 <- tmp[,3:4]
-tmp3 <- unstack(tmp2, value ~ variable)
-
-print.xtable(    
-    xtable(
-        cor(tmp3),
-        caption="Correlation between pathos types in 2011",
-        digits=2
-    ),
-    type="html", 
-    file="Tables/Pathos_Correlations_2011.html",
-    caption.placement="top"
+# remove missing values
+is.missing <- is.na(pathos_demos_difs$value)
+pathos_demos_difs <- pathos_demos_difs[!is.missing,]
+head(pathos_demos_difs)
+dim(pathos_demos_difs)
+pathos_demos_difs_list <- dlply(
+    pathos_demos_difs,
+    .(demog)
 )
 
-png("Figures/Pathos_Correlations_2011.png", 600, 600)
-corrgram(tmp3, upper.panel=NULL, main="\nCorrelation between pathos types\n2011")
+pathos_demos_difs_list[[1]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
+
+png("Figures/Corrgram_t1_rel_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between religion and pathos in 2001",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
+
 dev.off()
 
+####
+pathos_demos_difs_list[[2]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
 
-############################
 
-tmp <- subset(
-    Data_Long,
-    subset=year=="dif"
+png("Figures/Corrgram_t1_eth_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between ethnicity and pathos in 2001",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
 )
-tmp2 <- tmp[,3:4]
-tmp3 <- unstack(tmp2, value ~ variable)
-
-print.xtable(    
-    xtable(
-        cor(tmp3),
-        caption="Correlation in difference in pathos types from 2001 to 2011",
-        digits=2
-    ),
-    type="html", 
-    file="Tables/Pathos_Correlations_diff.html",
-    caption.placement="top"
-)
-
-png("Figures/Pathos_Correlations_diff.png", 600, 600)
-corrgram(tmp3, upper.panel=NULL, main="\nCorrelation between pathos types\nDifference from 2001 to 2011")
 dev.off()
 
+##################
+
+pathos_demos_difs_list[[3]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
 
 
-###################### Tables ###########################################################
+png("Figures/Corrgram_t1_coo_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations country of origin and pathos in 2001",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
+dev.off()
 
-source("Scripts/Make_Tables.R")
+##################################################################################################
+pathos_demos_difs <- subset(
+    pathos_demos_bign,
+    subset=year=="2011"
+)
+# remove missing values
+is.missing <- is.na(pathos_demos_difs$value)
+pathos_demos_difs <- pathos_demos_difs[!is.missing,]
+head(pathos_demos_difs)
+dim(pathos_demos_difs)
+pathos_demos_difs_list <- dlply(
+    pathos_demos_difs,
+    .(demog)
+)
 
+pathos_demos_difs_list[[1]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
 
+png("Figures/Corrgram_t2_rel_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between religion and pathos in 2011",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
 
-###################### Figures ##########################################################
+dev.off()
 
-source("Scripts/Make_Figures.R")
-
-
-
-
-
-#####################################################################################################
-############# Merging by areal unit characteristics #################################################
-#####################################################################################################
-
-
-
-#http://www.isdscotland.org/Products-and-Services/GPD-Support/Geography/Postcode-Reference-File/_docs/latestpcinfowithlinkpc.sav?1
-
-
-# Correlates of intermediate geographies
-
-
-# Possible things to explore:
-
-# 1) Age distribution and logos/pathos
-# 2) percent pensioners
-# 3) percent children
-
-# Income and poverty
-
-# KS204SC - Immigrant UK
-#url <- "https://www.dropbox.com/s/kzliwt4oldfbrxl/KS204SC.csv"
-
-
-
-Output_Area_Links_2001_2011 <- repmis::source_DropboxData(
-    file= "2001_Output_Area_to_2011_Output_Area.csv",
-    key="jhg2f7mirnz6a1z"
-    )
-
-Output_Area_Links_Old_New <- repmis::source_DropboxData(
-    file= "2011_Output_Area_Code__Old_to_New.csv",
-    key="pzjkortgo6dr07a"
-    )
-
-# From scotland.gov.uk
-
-Another_Link <- repmis::source_data(
-    url="http://www.scotland.gov.uk/Resource/Doc/933/0075365.txt"
-    )
+####
+pathos_demos_difs_list[[2]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
 
 
+png("Figures/Corrgram_t2_eth_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations between ethnicity and pathos in 2011",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
+dev.off()
+
+##################
+
+pathos_demos_difs_list[[3]] -> tmp
+tmp2 <- cast(tmp,  ~ variable)
+tmp1 <- tmp[,c("intermed", "all", "core", "i", "ii", "iii", "iv", "n")]
+tmp2 <- tmp[, c("intermed", "variable", "value")]
+tmp2a <- cast(tmp2, intermed ~ variable)
+tmp3 <- merge(tmp2a, tmp1, by="intermed")
+tmp4 <- tmp3[!duplicated(tmp3),]
 
 
-Df.tmp <- Areal_Unit_Links[,c("Datazone", "INTERMED")]
-
-Data_Country_of_Origin__merged <- merge(
-    x=Data_Long,
-    y=Df.tmp,
-    by.x="intermed",    
-    by.y="INTERMED",
-    all.x=TRUE
-    )
-
-
-Data_Country_of_Origin__merged <- merge(
-    x=Data_Country_of_Origin__merged,
-    y=Data_Country_of_Origin,
-    by.x="intermed",
-    by.y="X",
-    all.x=TRUE
-    )
-
-
-# 
-# ###################
-# print.xtable(xtable(head(Data_Country_of_Origin)), file="Tables/Country_of_Origin_Format.html", type="html")
-# print.xtable(xtable(head(Areal_Unit_Links)), file="Tables/Areal_Unit_Link_File_Format.html", type="html")
-# 
-# 
-
-
-
-# I think I need to do the followingL
-
-#1 Link Pathos_Data with Areal_Unit_Links 
-# Join: intermed : Pathos_Data
-# with: INTERMED : Areal_Unit_Links
-
-Data_Linked <- merge(
-    x=Data_Long,
-    y=Areal_Unit_Links,
-    by.x="intermed",
-    by.y="INTERMED", 
-    all.x=TRUE
-    )
-
-Data_Linked <- subset(
-    Data_Linked,
-    select=c("intermed", "year", "variable", "value", "PostcodeFull")
-    )
-
-# 2) Link Areal_Unit_Links with Output_Area_Links_2001_2011
-# Join: PostcodeFull: Areal_Unit_Links
-# with: MasterPostCode2001: OutputAreaLInks
-
-Data_Linked$PostcodeFull <- trim(as.character(Data_Linked$PostcodeFull))
-Output_Area_Links_2001_2011$MasterPostcode2001 <- trim(as.character(Output_Area_Links_2001_2011$MasterPostcode2001))
-
-
-Data_Linked <- merge(
-    x=Data_Linked, 
-    y=Output_Area_Links_2001_2011,
-    by.x="PostcodeFull",
-    by.y="MasterPostcode2001",
-    all.x=TRUE
-    )
-
-
-# 3) LInk OutputAreaLInks20012011 with Demo_Data
-# Join OutputArea2011Code: OutputAreaLinks
-# with : 2011 Output Areas : Demo Data
-Data_Linked <- merge(
-    x=Data_Linked,
-    y=Data_Country_of_Origin.Census_2011,
-    by.x="OutputArea2011Code",
-    by.y="X"
-    )
-
-
-### Additional notes etc from Raw Data on Pathos
-
-# Raw data on pathos:
-#     
-#     https://www.dropbox.com/s/8gb5vqy17pnff4u/GUdata2014q1_UoGprocessed_a_I__AQMENpathos_2a.dta
-# 
-# Syntax file:
-#     
-#     https://www.dropbox.com/s/xhch0jog6pdtxg5/AQMEN_Pathos_GSPC_2jun14_v1g.do
-# 
-# 
-# [] aggregate to postcode sector or postcode area for each year (or rolling averages of 3 years eg)
-# [] social network with postcode sectors as nodes: link between nodes if correlation coefficient > 0.8 eg.
-# [] merge with census data on ethnic change/country of origin to see if changes in pathos correlate with changes in neighbourhood mix
-# [] test whether neighbourhood mix is a factor in explaining social network links (i.e. homophily in language networks)
-# 
-# Good luck!
-#     
-#     g
-
-# 
+png("Figures/Corrgram_t2_coo_d_path.png", width=2000, height=1500)
+corrgram(
+    tmp4[,-c(1, length(names(tmp4)))],
+    upper.panel=panel.conf,
+    main="\n\nCorrelations country of origin and pathos in 2011",
+    col.regions=colorRampPalette(rev(c("red", "salmon", "white", "royalblue", "navy")))
+)
+dev.off()

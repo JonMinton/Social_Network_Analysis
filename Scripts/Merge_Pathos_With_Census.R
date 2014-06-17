@@ -606,10 +606,10 @@ c_long3 <- cast(c_long2, intermed + year + demog + variable ~ . , sum)
 
 c_long4 <- gdata::rename.vars(c_long3, from='(all)', to='value')
 
-census_tidied <- c_long4
+census_tidy <- c_long4
 
 save(
-    census_tidied,
+    census_tidy,
     path_tidy,
     file="Data/RObj/Tidied_Data.RData"
     )
